@@ -1,0 +1,83 @@
+<UserControl x:Class="QuanLyKho.Views.NhomVatTuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header + Buttons -->
+        <DockPanel Margin="0,0,0,10">
+            <TextBlock Text="Nhóm vật tư" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Command="{Binding AddCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Thêm mới"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding EditCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Pencil" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Sửa"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding DeleteCommand}" Style="{StaticResource BtnDelete}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xóa"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Edit Panel -->
+        <materialDesign:Card Grid.Row="1" Padding="16" Margin="0,0,0,8"
+                             Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="{Binding IsNew, Converter={StaticResource BoolToVis}, FallbackValue='Thông tin nhóm vật tư'}"
+                           FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                <WrapPanel>
+                    <StackPanel Margin="0,0,15,8">
+                        <TextBlock Text="Mã nhóm" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding EditMaNhom, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="200" Style="{StaticResource FormTextBox}"
+                                 materialDesign:HintAssist.Hint="VD: VPP"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,15,8">
+                        <TextBlock Text="Tên nhóm" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding EditTenNhom, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="300" Style="{StaticResource FormTextBox}"
+                                 materialDesign:HintAssist.Hint="VD: Văn phòng phẩm"/>
+                    </StackPanel>
+                </WrapPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnSave}" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Lưu"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Content="Hủy" Command="{Binding CancelCommand}" Style="{StaticResource BtnCancel}"/>
+                </StackPanel>
+            </StackPanel>
+        </materialDesign:Card>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSach}"
+                  SelectedItem="{Binding SelectedItem}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserAddRows="False" FontSize="13"
+                  RowHeight="36" ColumnHeaderHeight="38"
+                  Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"
+                  Style="{StaticResource MaterialDesignDataGrid}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Mã nhóm" Binding="{Binding MaNhom}" Width="180"/>
+                <DataGridTextColumn Header="Tên nhóm" Binding="{Binding TenNhom}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,97 @@
+<Window x:Class="QuanLyKho.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Quản Lý Kho - Sông Hồng Thủ Đô"
+        Height="750" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Style="{StaticResource MaterialDesignWindow}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#1A1A2E" Offset="0"/>
+                    <GradientStop Color="#16213E" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <DockPanel>
+                <!-- Header -->
+                <StackPanel DockPanel.Dock="Top" Margin="15,25,15,10">
+                    <Border Width="56" Height="56" CornerRadius="28"
+                            Background="#C62828" HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Warehouse" Width="30" Height="30"
+                                                 Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="QUẢN LÝ KHO" FontSize="16" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center" Margin="0,10,0,2"/>
+                    <TextBlock Text="Sông Hồng Thủ Đô" FontSize="11"
+                               Foreground="#88FFFFFF" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <Separator DockPanel.Dock="Top" Background="#22FFFFFF" Margin="20,8"/>
+
+                <!-- Menu -->
+                <ListBox ItemsSource="{Binding MenuItems}"
+                         SelectedItem="{Binding SelectedMenuItem}"
+                         Background="Transparent" BorderThickness="0"
+                         Margin="8,4,8,8"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Margin" Value="0,1"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border x:Name="Bd" Background="Transparent"
+                                                CornerRadius="10" Padding="14,11">
+                                            <ContentPresenter/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#C62828"/>
+                                            </Trigger>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="IsMouseOver" Value="True"/>
+                                                    <Condition Property="IsSelected" Value="False"/>
+                                                </MultiTrigger.Conditions>
+                                                <Setter TargetName="Bd" Property="Background" Value="#22FFFFFF"/>
+                                            </MultiTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="{Binding Icon}"
+                                                         Width="22" Height="22"
+                                                         Foreground="White"
+                                                         VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Title}"
+                                           Foreground="White" FontSize="13.5"
+                                           VerticalAlignment="Center" Margin="14,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Content -->
+        <Border Grid.Column="1" Background="#F5F5F5">
+            <ContentControl Content="{Binding CurrentView}" Margin="24"/>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,162 @@
+<UserControl x:Class="QuanLyKho.Views.DeNghiCapVatTuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid>
+        <!-- List View -->
+        <Grid Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Margin="0,0,0,8">
+                <TextBlock Text="Đề nghị cấp vật tư" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Tạo đề nghị"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding EditPhieuCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Eye" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Xem / Sửa"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding DeletePhieuCommand}" Style="{StaticResource BtnDelete}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Xóa"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+
+            <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedPhieu}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                      FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
+                      Style="{StaticResource MaterialDesignDataGrid}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Số phiếu" Binding="{Binding SoPhieu}" Width="180"/>
+                    <DataGridTextColumn Header="Ngày" Binding="{Binding NgayDeNghi, StringFormat=dd/MM/yyyy}" Width="110"/>
+                    <DataGridTextColumn Header="Người đề nghị" Binding="{Binding NguoiDeNghi}" Width="180"/>
+                    <DataGridTextColumn Header="Bộ phận" Binding="{Binding BoPhan.TenBoPhan}" Width="150"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding TrangThai, Converter={StaticResource TrangThaiFormat}}" Width="120"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Edit Form -->
+        <ScrollViewer Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+                <DockPanel Margin="0,0,0,10">
+                    <TextBlock Text="Giấy đề nghị cấp vật tư" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnSave}" Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="Lưu"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Content="Quay lại" Command="{Binding CancelEditCommand}" Style="{StaticResource BtnCancel}"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <materialDesign:Card Padding="16" Margin="0,0,0,10">
+                    <WrapPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Số phiếu" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding EditSoPhieu}" IsReadOnly="True" Width="180"
+                                     Style="{StaticResource FormTextBox}" Background="#F0F0F0"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Ngày đề nghị" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <DatePicker SelectedDate="{Binding EditNgayDeNghi}" Width="150"
+                                        Style="{StaticResource FormDatePicker}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Người đề nghị" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding EditNguoiDeNghi, UpdateSourceTrigger=PropertyChanged}" Width="180"
+                                     Style="{StaticResource FormTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Bộ phận" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding BoPhans}" SelectedItem="{Binding EditBoPhan}"
+                                      DisplayMemberPath="TenBoPhan" Width="180"
+                                      Style="{StaticResource FormComboBox}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Chức vụ" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding EditChucVu, UpdateSourceTrigger=PropertyChanged}" Width="150"
+                                     Style="{StaticResource FormTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="Trạng thái" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <ComboBox SelectedIndex="{Binding EditTrangThai}" Width="140"
+                                      Style="{StaticResource FormComboBox}">
+                                <ComboBoxItem Content="Nháp"/>
+                                <ComboBoxItem Content="Đã duyệt"/>
+                                <ComboBoxItem Content="Đã cấp"/>
+                                <ComboBoxItem Content="Từ chối"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </WrapPanel>
+                </materialDesign:Card>
+
+                <TextBlock Text="Chi tiết vật tư cần cấp" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,6"/>
+
+                <DataGrid ItemsSource="{Binding ChiTietRows}" AutoGenerateColumns="False"
+                          CanUserAddRows="False" FontSize="13" RowHeight="40" ColumnHeaderHeight="38"
+                          Style="{StaticResource MaterialDesignDataGrid}" Margin="0,0,0,0">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Vật tư (chọn từ danh sách)" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.VatTus, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              SelectedItem="{Binding VatTu, UpdateSourceTrigger=PropertyChanged}"
+                                              DisplayMemberPath="TenVatTu" IsEditable="True"
+                                              BorderThickness="0" Background="Transparent" Padding="4,2"
+                                              materialDesign:HintAssist.Hint="-- Chọn vật tư --"
+                                              materialDesign:HintAssist.IsFloating="False"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="ĐVT" Binding="{Binding VatTu.DonViTinh.TenDonVi, Mode=OneWay}" Width="70" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="SL yêu cầu" Binding="{Binding SoLuongYeuCau, UpdateSourceTrigger=PropertyChanged}" Width="110"/>
+                        <DataGridTextColumn Header="SL đã cấp" Binding="{Binding SoLuongDaCap, UpdateSourceTrigger=PropertyChanged}" Width="110"/>
+                        <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                        <DataGridTemplateColumn Header="" Width="60">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" Content="Xóa"
+                                            Foreground="#C62828" FontSize="12"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            Padding="4,2" Height="28" MinWidth="0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Button Command="{Binding AddRowCommand}" HorizontalAlignment="Stretch" Height="38"
+                        BorderBrush="#CCCCCC" BorderThickness="1" Background="White" Cursor="Hand"
+                        Margin="0,0,0,10">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" VerticalAlignment="Center" Foreground="#555"/>
+                        <TextBlock Text="  Thêm dòng mới" Foreground="#555" FontSize="13" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

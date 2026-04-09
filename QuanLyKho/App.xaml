@@ -1,0 +1,58 @@
+<Application x:Class="QuanLyKho.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:vm="clr-namespace:QuanLyKho.ViewModels"
+             xmlns:views="clr-namespace:QuanLyKho.Views"
+             xmlns:converters="clr-namespace:QuanLyKho.Converters"
+             ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Red" SecondaryColor="Amber" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+                <ResourceDictionary Source="Resources/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+            <converters:CurrencyFormatConverter x:Key="CurrencyFormat"/>
+            <converters:TrangThaiConverter x:Key="TrangThaiFormat"/>
+
+            <!-- DataTemplates: ViewModel -> View mapping -->
+            <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                <views:DashboardView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:VatTuViewModel}">
+                <views:VatTuView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NhomVatTuViewModel}">
+                <views:NhomVatTuView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DonViTinhViewModel}">
+                <views:DonViTinhView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:BoPhanViewModel}">
+                <views:BoPhanView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:KhoViewModel}">
+                <views:KhoView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NhapKhoViewModel}">
+                <views:NhapKhoView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:XuatKhoViewModel}">
+                <views:XuatKhoView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DeNghiCapVatTuViewModel}">
+                <views:DeNghiCapVatTuView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:TonKhoViewModel}">
+                <views:TonKhoView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:BaoCaoViewModel}">
+                <views:BaoCaoView/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
