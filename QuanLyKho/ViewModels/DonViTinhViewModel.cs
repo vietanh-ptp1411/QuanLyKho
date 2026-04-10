@@ -16,6 +16,7 @@ public partial class DonViTinhViewModel : ObservableObject
     [ObservableProperty] private bool _isEditing;
     [ObservableProperty] private string _editTenDonVi = "";
     [ObservableProperty] private bool _isNew;
+    [ObservableProperty] private string _errorMessage = "";
 
     public DonViTinhViewModel(IDbContextFactory<AppDbContext> contextFactory)
     {
@@ -26,9 +27,17 @@ public partial class DonViTinhViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var items = await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync();
-        DanhSach = new ObservableCollection<DonViTinh>(items);
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var items = await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync();
+            DanhSach = new ObservableCollection<DonViTinh>(items);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -38,6 +47,7 @@ public partial class DonViTinhViewModel : ObservableObject
         IsEditing = true;
         EditTenDonVi = "";
         SelectedItem = null;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
@@ -47,44 +57,69 @@ public partial class DonViTinhViewModel : ObservableObject
         IsNew = false;
         IsEditing = true;
         EditTenDonVi = SelectedItem.TenDonVi;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
     private async Task Save()
     {
-        if (string.IsNullOrWhiteSpace(EditTenDonVi)) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        if (IsNew)
+        if (string.IsNullOrWhiteSpace(EditTenDonVi))
         {
-            context.DonViTinhs.Add(new DonViTinh { TenDonVi = EditTenDonVi.Trim() });
-        }
-        else if (SelectedItem != null)
-        {
-            var entity = await context.DonViTinhs.FindAsync(SelectedItem.Id);
-            if (entity != null) entity.TenDonVi = EditTenDonVi.Trim();
+            ErrorMessage = "Vui lòng nhập tên đơn vị tính.";
+            return;
         }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            if (IsNew)
+            {
+                context.DonViTinhs.Add(new DonViTinh { TenDonVi = EditTenDonVi.Trim() });
+            }
+            else if (SelectedItem != null)
+            {
+                var entity = await context.DonViTinhs.FindAsync(SelectedItem.Id);
+                if (entity != null) entity.TenDonVi = EditTenDonVi.Trim();
+            }
+
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
-    private void Cancel() => IsEditing = false;
+    private void Cancel()
+    {
+        IsEditing = false;
+        ErrorMessage = "";
+    }
 
     [RelayCommand]
     private async Task Delete()
     {
         if (SelectedItem == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.DonViTinhs.FindAsync(SelectedItem.Id);
-        if (entity != null)
+        try
         {
-            context.DonViTinhs.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.DonViTinhs.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.DonViTinhs.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa đơn vị tính: {ex.Message}";
+        }
     }
 }

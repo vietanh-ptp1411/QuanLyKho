@@ -18,6 +18,7 @@ public partial class KhoViewModel : ObservableObject
     [ObservableProperty] private string _editTenKho = "";
     [ObservableProperty] private string _editDiaChi = "";
     [ObservableProperty] private bool _isNew;
+    [ObservableProperty] private string _errorMessage = "";
 
     public KhoViewModel(IDbContextFactory<AppDbContext> contextFactory)
     {
@@ -28,9 +29,17 @@ public partial class KhoViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var items = await context.Khos.OrderBy(x => x.MaKho).ToListAsync();
-        DanhSach = new ObservableCollection<Kho>(items);
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var items = await context.Khos.OrderBy(x => x.MaKho).ToListAsync();
+            DanhSach = new ObservableCollection<Kho>(items);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -42,6 +51,7 @@ public partial class KhoViewModel : ObservableObject
         EditTenKho = "";
         EditDiaChi = "";
         SelectedItem = null;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
@@ -53,54 +63,79 @@ public partial class KhoViewModel : ObservableObject
         EditMaKho = SelectedItem.MaKho;
         EditTenKho = SelectedItem.TenKho;
         EditDiaChi = SelectedItem.DiaChi;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
     private async Task Save()
     {
-        if (string.IsNullOrWhiteSpace(EditMaKho) || string.IsNullOrWhiteSpace(EditTenKho)) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        if (IsNew)
+        if (string.IsNullOrWhiteSpace(EditMaKho) || string.IsNullOrWhiteSpace(EditTenKho))
         {
-            context.Khos.Add(new Kho
-            {
-                MaKho = EditMaKho.Trim(),
-                TenKho = EditTenKho.Trim(),
-                DiaChi = EditDiaChi.Trim()
-            });
+            ErrorMessage = "Vui lòng điền mã kho và tên kho.";
+            return;
         }
-        else if (SelectedItem != null)
+
+        try
         {
-            var entity = await context.Khos.FindAsync(SelectedItem.Id);
-            if (entity != null)
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            if (IsNew)
             {
-                entity.MaKho = EditMaKho.Trim();
-                entity.TenKho = EditTenKho.Trim();
-                entity.DiaChi = EditDiaChi.Trim();
+                context.Khos.Add(new Kho
+                {
+                    MaKho = EditMaKho.Trim(),
+                    TenKho = EditTenKho.Trim(),
+                    DiaChi = EditDiaChi.Trim()
+                });
             }
-        }
+            else if (SelectedItem != null)
+            {
+                var entity = await context.Khos.FindAsync(SelectedItem.Id);
+                if (entity != null)
+                {
+                    entity.MaKho = EditMaKho.Trim();
+                    entity.TenKho = EditTenKho.Trim();
+                    entity.DiaChi = EditDiaChi.Trim();
+                }
+            }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
-    private void Cancel() => IsEditing = false;
+    private void Cancel()
+    {
+        IsEditing = false;
+        ErrorMessage = "";
+    }
 
     [RelayCommand]
     private async Task Delete()
     {
         if (SelectedItem == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.Khos.FindAsync(SelectedItem.Id);
-        if (entity != null)
+        try
         {
-            context.Khos.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.Khos.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.Khos.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa kho: {ex.Message}";
+        }
     }
 }

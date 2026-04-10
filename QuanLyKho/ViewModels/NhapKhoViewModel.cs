@@ -20,6 +20,7 @@ public partial class NhapKhoViewModel : ObservableObject
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private DateTime? _filterFromDate;
     [ObservableProperty] private DateTime? _filterToDate;
+    [ObservableProperty] private string _errorMessage = "";
 
     // Form view
     [ObservableProperty] private bool _isEditing;
@@ -51,25 +52,33 @@ public partial class NhapKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        Khos = new ObservableCollection<Kho>(await context.Khos.ToListAsync());
-        VatTus = new ObservableCollection<VatTu>(await context.VatTus.Include(v => v.DonViTinh).ToListAsync());
-
-        var query = context.PhieuNhapKhos.Include(p => p.Kho).AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(SearchText))
+        try
         {
-            var s = SearchText.Trim().ToLower();
-            query = query.Where(p => p.SoPhieu.ToLower().Contains(s) || p.NguoiGiaoHang.ToLower().Contains(s));
-        }
-        if (FilterFromDate.HasValue)
-            query = query.Where(p => p.NgayNhap >= FilterFromDate.Value);
-        if (FilterToDate.HasValue)
-            query = query.Where(p => p.NgayNhap <= FilterToDate.Value.AddDays(1));
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
 
-        DanhSach = new ObservableCollection<PhieuNhapKho>(
-            await query.OrderByDescending(p => p.NgayNhap).ToListAsync());
+            Khos = new ObservableCollection<Kho>(await context.Khos.ToListAsync());
+            VatTus = new ObservableCollection<VatTu>(await context.VatTus.Include(v => v.DonViTinh).ToListAsync());
+
+            var query = context.PhieuNhapKhos.Include(p => p.Kho).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var s = SearchText.Trim().ToLower();
+                query = query.Where(p => p.SoPhieu.ToLower().Contains(s) || p.NguoiGiaoHang.ToLower().Contains(s));
+            }
+            if (FilterFromDate.HasValue)
+                query = query.Where(p => p.NgayNhap >= FilterFromDate.Value);
+            if (FilterToDate.HasValue)
+                query = query.Where(p => p.NgayNhap <= FilterToDate.Value.AddDays(1));
+
+            DanhSach = new ObservableCollection<PhieuNhapKho>(
+                await query.OrderByDescending(p => p.NgayNhap).ToListAsync());
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 
     partial void OnSearchTextChanged(string value) => LoadDataCommand.ExecuteAsync(null);
@@ -77,71 +86,87 @@ public partial class NhapKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task AddNew()
     {
-        IsNew = true;
-        IsEditing = true;
-        EditNgayNhap = DateTime.Now;
-        EditNguoiGiaoHang = "";
-        EditKho = Khos.FirstOrDefault();
-        EditNguoiLapPhieu = "";
-        EditThuKho = "";
-        EditKeToanTruong = "";
-        EditGiamDoc = "";
-        EditGhiChu = "";
-        ChiTietRows = new ObservableCollection<ChiTietNhapRow>();
-        TongTien = 0;
-
-        // Auto-generate SoPhieu
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var today = DateTime.Now.ToString("yyyyMMdd");
-        var prefix = $"NK-{today}-";
-        var lastPhieu = await context.PhieuNhapKhos
-            .Where(p => p.SoPhieu.StartsWith(prefix))
-            .OrderByDescending(p => p.SoPhieu)
-            .FirstOrDefaultAsync();
-
-        int nextNum = 1;
-        if (lastPhieu != null)
+        try
         {
-            var lastNumStr = lastPhieu.SoPhieu.Replace(prefix, "");
-            if (int.TryParse(lastNumStr, out int lastNum)) nextNum = lastNum + 1;
+            ErrorMessage = "";
+            IsNew = true;
+            IsEditing = true;
+            EditNgayNhap = DateTime.Now;
+            EditNguoiGiaoHang = "";
+            EditKho = Khos.FirstOrDefault();
+            EditNguoiLapPhieu = "";
+            EditThuKho = "";
+            EditKeToanTruong = "";
+            EditGiamDoc = "";
+            EditGhiChu = "";
+            ChiTietRows = new ObservableCollection<ChiTietNhapRow>();
+            TongTien = 0;
+
+            // Auto-generate SoPhieu
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var today = DateTime.Now.ToString("yyyyMMdd");
+            var prefix = $"NK-{today}-";
+            var lastPhieu = await context.PhieuNhapKhos
+                .Where(p => p.SoPhieu.StartsWith(prefix))
+                .OrderByDescending(p => p.SoPhieu)
+                .FirstOrDefaultAsync();
+
+            int nextNum = 1;
+            if (lastPhieu != null)
+            {
+                var lastNumStr = lastPhieu.SoPhieu.Replace(prefix, "");
+                if (int.TryParse(lastNumStr, out int lastNum)) nextNum = lastNum + 1;
+            }
+            EditSoPhieu = $"{prefix}{nextNum:D3}";
         }
-        EditSoPhieu = $"{prefix}{nextNum:D3}";
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tạo phiếu mới: {ex.Message}";
+        }
     }
 
     [RelayCommand]
     private async Task EditPhieu()
     {
         if (SelectedPhieu == null) return;
-        IsNew = false;
-        IsEditing = true;
+        try
+        {
+            ErrorMessage = "";
+            IsNew = false;
+            IsEditing = true;
 
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var phieu = await context.PhieuNhapKhos
-            .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-            .Include(p => p.Kho)
-            .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieu = await context.PhieuNhapKhos
+                .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .Include(p => p.Kho)
+                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
 
-        if (phieu == null) return;
+            if (phieu == null) return;
 
-        EditSoPhieu = phieu.SoPhieu;
-        EditNgayNhap = phieu.NgayNhap;
-        EditNguoiGiaoHang = phieu.NguoiGiaoHang;
-        EditKho = Khos.FirstOrDefault(k => k.Id == phieu.KhoId);
-        EditNguoiLapPhieu = phieu.NguoiLapPhieu;
-        EditThuKho = phieu.ThuKho;
-        EditKeToanTruong = phieu.KeToanTruong;
-        EditGiamDoc = phieu.GiamDoc;
-        EditGhiChu = phieu.GhiChu;
+            EditSoPhieu = phieu.SoPhieu;
+            EditNgayNhap = phieu.NgayNhap;
+            EditNguoiGiaoHang = phieu.NguoiGiaoHang;
+            EditKho = Khos.FirstOrDefault(k => k.Id == phieu.KhoId);
+            EditNguoiLapPhieu = phieu.NguoiLapPhieu;
+            EditThuKho = phieu.ThuKho;
+            EditKeToanTruong = phieu.KeToanTruong;
+            EditGiamDoc = phieu.GiamDoc;
+            EditGhiChu = phieu.GhiChu;
 
-        ChiTietRows = new ObservableCollection<ChiTietNhapRow>(
-            phieu.ChiTietPhieuNhaps.Select(ct => new ChiTietNhapRow(this)
-            {
-                VatTu = VatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
-                SoLuong = ct.SoLuong,
-                DonGia = ct.DonGia,
-                ThanhTien = ct.ThanhTien
-            }));
-        RecalcTongTien();
+            ChiTietRows = new ObservableCollection<ChiTietNhapRow>(
+                phieu.ChiTietPhieuNhaps.Select(ct => new ChiTietNhapRow(this)
+                {
+                    VatTu = VatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
+                    SoLuong = ct.SoLuong,
+                    DonGia = ct.DonGia,
+                    ThanhTien = ct.ThanhTien
+                }));
+            RecalcTongTien();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi mở phiếu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -165,69 +190,90 @@ public partial class NhapKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
-        if (EditKho == null || string.IsNullOrWhiteSpace(EditSoPhieu)) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        PhieuNhapKho phieu;
-        if (IsNew)
+        if (EditKho == null || string.IsNullOrWhiteSpace(EditSoPhieu))
         {
-            phieu = new PhieuNhapKho();
-            context.PhieuNhapKhos.Add(phieu);
-        }
-        else
-        {
-            phieu = await context.PhieuNhapKhos
-                .Include(p => p.ChiTietPhieuNhaps)
-                .FirstAsync(p => p.Id == SelectedPhieu!.Id);
-            phieu.ChiTietPhieuNhaps.Clear();
+            ErrorMessage = "Vui lòng chọn kho và điền số phiếu.";
+            return;
         }
 
-        phieu.SoPhieu = EditSoPhieu;
-        phieu.NgayNhap = EditNgayNhap;
-        phieu.NguoiGiaoHang = EditNguoiGiaoHang;
-        phieu.KhoId = EditKho.Id;
-        phieu.NguoiLapPhieu = EditNguoiLapPhieu;
-        phieu.ThuKho = EditThuKho;
-        phieu.KeToanTruong = EditKeToanTruong;
-        phieu.GiamDoc = EditGiamDoc;
-        phieu.GhiChu = EditGhiChu;
-        phieu.TongTien = TongTien;
-
-        foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+        try
         {
-            phieu.ChiTietPhieuNhaps.Add(new ChiTietPhieuNhap
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            PhieuNhapKho phieu;
+            if (IsNew)
             {
-                VatTuId = row.VatTu!.Id,
-                SoLuong = row.SoLuong,
-                DonGia = row.DonGia,
-                ThanhTien = row.ThanhTien
-            });
-        }
+                phieu = new PhieuNhapKho();
+                context.PhieuNhapKhos.Add(phieu);
+            }
+            else
+            {
+                phieu = await context.PhieuNhapKhos
+                    .Include(p => p.ChiTietPhieuNhaps)
+                    .FirstAsync(p => p.Id == SelectedPhieu!.Id);
+                phieu.ChiTietPhieuNhaps.Clear();
+            }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+            phieu.SoPhieu = EditSoPhieu;
+            phieu.NgayNhap = EditNgayNhap;
+            phieu.NguoiGiaoHang = EditNguoiGiaoHang;
+            phieu.KhoId = EditKho.Id;
+            phieu.NguoiLapPhieu = EditNguoiLapPhieu;
+            phieu.ThuKho = EditThuKho;
+            phieu.KeToanTruong = EditKeToanTruong;
+            phieu.GiamDoc = EditGiamDoc;
+            phieu.GhiChu = EditGhiChu;
+            phieu.TongTien = TongTien;
+
+            foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+            {
+                phieu.ChiTietPhieuNhaps.Add(new ChiTietPhieuNhap
+                {
+                    VatTuId = row.VatTu!.Id,
+                    SoLuong = row.SoLuong,
+                    DonGia = row.DonGia,
+                    ThanhTien = row.ThanhTien
+                });
+            }
+
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu phiếu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
     private void CancelEdit()
     {
         IsEditing = false;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
     private async Task DeletePhieu()
     {
         if (SelectedPhieu == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.PhieuNhapKhos.FindAsync(SelectedPhieu.Id);
-        if (entity != null)
+        try
         {
-            context.PhieuNhapKhos.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.PhieuNhapKhos.FindAsync(SelectedPhieu.Id);
+            if (entity != null)
+            {
+                context.PhieuNhapKhos.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa phiếu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -240,19 +286,27 @@ public partial class NhapKhoViewModel : ObservableObject
         var id = IsEditing && !IsNew ? SelectedPhieu!.Id : SelectedPhieu?.Id;
         if (id == null) return;
 
-        var dialog = new Microsoft.Win32.SaveFileDialog
+        try
         {
-            Filter = "PDF (*.pdf)|*.pdf",
-            FileName = $"PhieuNhapKho_{EditSoPhieu}.pdf"
-        };
-        if (dialog.ShowDialog() != true) return;
+            ErrorMessage = "";
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "PDF (*.pdf)|*.pdf",
+                FileName = $"PhieuNhapKho_{EditSoPhieu}.pdf"
+            };
+            if (dialog.ShowDialog() != true) return;
 
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var phieu = await context.PhieuNhapKhos
-            .Include(p => p.Kho)
-            .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (phieu != null) await _pdfService.ExportPhieuNhapKho(phieu, dialog.FileName);
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieu = await context.PhieuNhapKhos
+                .Include(p => p.Kho)
+                .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (phieu != null) await _pdfService.ExportPhieuNhapKho(phieu, dialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xuất PDF: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -262,19 +316,27 @@ public partial class NhapKhoViewModel : ObservableObject
         var id = IsEditing && !IsNew ? SelectedPhieu!.Id : SelectedPhieu?.Id;
         if (id == null) return;
 
-        var dialog = new Microsoft.Win32.SaveFileDialog
+        try
         {
-            Filter = "Excel (*.xlsx)|*.xlsx",
-            FileName = $"PhieuNhapKho_{EditSoPhieu}.xlsx"
-        };
-        if (dialog.ShowDialog() != true) return;
+            ErrorMessage = "";
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel (*.xlsx)|*.xlsx",
+                FileName = $"PhieuNhapKho_{EditSoPhieu}.xlsx"
+            };
+            if (dialog.ShowDialog() != true) return;
 
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var phieu = await context.PhieuNhapKhos
-            .Include(p => p.Kho)
-            .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (phieu != null) await _excelService.ExportPhieuNhapKho(phieu, dialog.FileName);
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieu = await context.PhieuNhapKhos
+                .Include(p => p.Kho)
+                .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (phieu != null) await _excelService.ExportPhieuNhapKho(phieu, dialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xuất Excel: {ex.Message}";
+        }
     }
 }
 

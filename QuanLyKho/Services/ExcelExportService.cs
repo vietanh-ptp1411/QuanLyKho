@@ -109,38 +109,149 @@ public class ExcelExportService : IExcelExportService
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Đề nghị cấp VT");
 
-        ws.Cell("A1").Value = "GIẤY ĐỀ NGHỊ CẤP VẬT TƯ";
-        ws.Range("A1:F1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        // Set column widths (8 columns)
+        ws.Column(1).Width = 5;
+        ws.Column(2).Width = 15;
+        ws.Column(3).Width = 15;
+        ws.Column(4).Width = 8;
+        ws.Column(5).Width = 10;
+        ws.Column(6).Width = 10;
+        ws.Column(7).Width = 10;
+        ws.Column(8).Width = 15;
 
-        ws.Cell("A2").Value = $"Số phiếu: {phieu.SoPhieu}";
-        ws.Cell("A3").Value = $"Ngày: {phieu.NgayDeNghi:dd/MM/yyyy}";
-        ws.Cell("A4").Value = $"Người đề nghị: {phieu.NguoiDeNghi}";
-        ws.Cell("A5").Value = $"Bộ phận: {phieu.BoPhan?.TenBoPhan}";
-        ws.Cell("A6").Value = $"Chức vụ: {phieu.ChucVu}";
+        int row = 1;
 
-        int row = 8;
+        // === HEADER ===
+        ws.Cell(row, 1).Value = "CÔNG TY CP TẬP ĐOÀN\nSÔNG HỒNG THỦ ĐÔ";
+        ws.Range(row, 1, row, 3).Merge();
+        ws.Cell(row, 1).Style.Font.SetBold().Font.FontSize = 11;
+        ws.Cell(row, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+            .Alignment.SetVertical(XLAlignmentVerticalValues.Top).Alignment.SetWrapText(true);
+
+        ws.Cell(row, 4).Value = "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\nĐộc lập - Tự do - Hạnh phúc";
+        ws.Range(row, 4, row, 8).Merge();
+        ws.Cell(row, 4).Style.Font.SetBold().Font.FontSize = 11;
+        ws.Cell(row, 4).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+            .Alignment.SetVertical(XLAlignmentVerticalValues.Top).Alignment.SetWrapText(true);
+        ws.Row(row).Height = 30;
+
+        row++;
+        ws.Cell(row, 4).Value = $"......, ngày {phieu.NgayDeNghi:dd} tháng {phieu.NgayDeNghi:MM} năm {phieu.NgayDeNghi:yyyy}";
+        ws.Range(row, 4, row, 8).Merge();
+        ws.Cell(row, 4).Style.Font.Italic = true;
+        ws.Cell(row, 4).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+        row += 2;
+
+        // === TITLE ===
+        ws.Cell(row, 1).Value = "GIẤY ĐỀ NGHỊ CẤP VẬT TƯ";
+        ws.Range(row, 1, row, 8).Merge();
+        ws.Cell(row, 1).Style.Font.SetBold().Font.FontSize = 18;
+        ws.Cell(row, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+        row += 2;
+
+        // === INFO ===
+        ws.Cell(row, 1).Value = $"Họ tên: {phieu.NguoiDeNghi}";
+        ws.Range(row, 1, row, 4).Merge();
+        ws.Cell(row, 5).Value = $"Chức vụ: {phieu.ChucVu}";
+        ws.Range(row, 5, row, 8).Merge();
+
+        row++;
+        ws.Cell(row, 1).Value = $"Bộ phận: {phieu.BoPhan?.TenBoPhan ?? ""}";
+        ws.Range(row, 1, row, 4).Merge();
+        ws.Cell(row, 5).Value = "Số điện thoại:";
+        ws.Range(row, 5, row, 8).Merge();
+
+        row++;
+        ws.Cell(row, 1).Value = "Xin cấp các loại vật tư sau:";
+        ws.Range(row, 1, row, 8).Merge();
+
+        row++;
+        int tableStartRow = row;
+
+        // === TABLE HEADER ===
         ws.Cell(row, 1).Value = "STT";
-        ws.Cell(row, 2).Value = "Tên vật tư";
-        ws.Cell(row, 3).Value = "ĐVT";
-        ws.Cell(row, 4).Value = "SL yêu cầu";
-        ws.Cell(row, 5).Value = "Đã cấp";
-        ws.Cell(row, 6).Value = "Ghi chú";
-        ws.Range(row, 1, row, 6).Style.Font.SetBold().Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+        ws.Cell(row, 2).Value = "Tên vật tư (Quy cách, mẫu\nmã, thông số kỹ thuật...)";
+        ws.Range(row, 2, row, 3).Merge();
+        ws.Cell(row, 4).Value = "ĐVT";
+        ws.Cell(row, 5).Value = "SL\ntồn\nkho";
+        ws.Cell(row, 6).Value = "SL\nđề\nnghị";
+        ws.Cell(row, 7).Value = "SL\nđược\nduyệt";
+        ws.Cell(row, 8).Value = "Ghi\nchú";
 
+        ws.Range(row, 1, row, 8).Style.Font.SetBold()
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+            .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
+            .Alignment.SetWrapText(true)
+            .Fill.SetBackgroundColor(XLColor.FromHtml("#F3F4F6"));
+        ws.Row(row).Height = 45;
+
+        // === TABLE DATA ===
         int stt = 1;
         foreach (var ct in phieu.ChiTietDeNghis)
         {
             row++;
             ws.Cell(row, 1).Value = stt++;
             ws.Cell(row, 2).Value = ct.VatTu?.TenVatTu ?? "";
-            ws.Cell(row, 3).Value = ct.VatTu?.DonViTinh?.TenDonVi ?? "";
-            ws.Cell(row, 4).Value = ct.SoLuongYeuCau;
-            ws.Cell(row, 5).Value = ct.SoLuongDaCap;
-            ws.Cell(row, 6).Value = ct.GhiChu;
-            ws.Range(row, 1, row, 6).Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            ws.Range(row, 2, row, 3).Merge();
+            ws.Cell(row, 4).Value = ct.VatTu?.DonViTinh?.TenDonVi ?? "";
+            ws.Cell(row, 5).Value = "";
+            ws.Cell(row, 6).Value = ct.SoLuongYeuCau;
+            if (ct.SoLuongDaCap > 0)
+                ws.Cell(row, 7).Value = ct.SoLuongDaCap;
+            else
+                ws.Cell(row, 7).Value = "";
+            ws.Cell(row, 8).Value = ct.GhiChu;
+
+            ws.Cell(row, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            ws.Cell(row, 4).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            ws.Range(row, 5, row, 7).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
         }
 
-        ws.Columns().AdjustToContents();
+        // Empty rows
+        for (int i = 0; i < 2; i++)
+        {
+            row++;
+            ws.Range(row, 2, row, 3).Merge();
+            ws.Row(row).Height = 22;
+        }
+
+        // Borders
+        ws.Range(tableStartRow, 1, row, 8).Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin)
+            .Border.SetInsideBorder(XLBorderStyleValues.Thin);
+
+        row++;
+
+        // === FOOTER ===
+        var totalItems = phieu.ChiTietDeNghis.Count;
+        ws.Cell(row, 1).Value = $"(Tổng: {totalItems:D2} loại. Để sử dụng: {phieu.GhiChu})";
+        ws.Range(row, 1, row, 8).Merge();
+        ws.Cell(row, 1).Style.Font.Italic = true;
+
+        row += 2;
+
+        // === SIGNATURES ===
+        ws.Cell(row, 1).Value = "Người duyệt";
+        ws.Range(row, 1, row, 2).Merge();
+        ws.Cell(row, 3).Value = "Phòng TC-HC";
+        ws.Range(row, 3, row, 4).Merge();
+        ws.Cell(row, 5).Value = "CB phụ trách";
+        ws.Range(row, 5, row, 6).Merge();
+        ws.Cell(row, 7).Value = "Người đề nghị";
+        ws.Range(row, 7, row, 8).Merge();
+
+        ws.Range(row, 1, row, 8).Style.Font.SetBold()
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+        // Page setup
+        ws.PageSetup.PageOrientation = XLPageOrientation.Portrait;
+        ws.PageSetup.PaperSize = XLPaperSize.A4Paper;
+        ws.PageSetup.Margins.Top = 0.5;
+        ws.PageSetup.Margins.Bottom = 0.5;
+        ws.PageSetup.Margins.Left = 0.5;
+        ws.PageSetup.Margins.Right = 0.5;
+
         workbook.SaveAs(filePath);
         return Task.CompletedTask;
     }

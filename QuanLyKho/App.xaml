@@ -18,6 +18,7 @@
             <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
             <converters:CurrencyFormatConverter x:Key="CurrencyFormat"/>
             <converters:TrangThaiConverter x:Key="TrangThaiFormat"/>
+            <converters:IndexConverter x:Key="IndexConverter"/>
 
             <!-- DataTemplates: ViewModel -> View mapping -->
             <DataTemplate DataType="{x:Type vm:DashboardViewModel}">

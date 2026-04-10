@@ -14,6 +14,7 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<DeNghiCapVatTu> _danhSach = new();
     [ObservableProperty] private DeNghiCapVatTu? _selectedPhieu;
     [ObservableProperty] private int _filterTrangThai = -1; // -1 = all
+    [ObservableProperty] private string _errorMessage = "";
 
     // Form
     [ObservableProperty] private bool _isEditing;
@@ -41,17 +42,25 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
 
-        BoPhans = new ObservableCollection<BoPhan>(await context.BoPhans.ToListAsync());
-        VatTus = new ObservableCollection<VatTu>(await context.VatTus.Include(v => v.DonViTinh).ToListAsync());
+            BoPhans = new ObservableCollection<BoPhan>(await context.BoPhans.ToListAsync());
+            VatTus = new ObservableCollection<VatTu>(await context.VatTus.Include(v => v.DonViTinh).ToListAsync());
 
-        var query = context.DeNghiCapVatTus.Include(p => p.BoPhan).AsQueryable();
-        if (FilterTrangThai >= 0)
-            query = query.Where(p => p.TrangThai == FilterTrangThai);
+            var query = context.DeNghiCapVatTus.Include(p => p.BoPhan).AsQueryable();
+            if (FilterTrangThai >= 0)
+                query = query.Where(p => p.TrangThai == FilterTrangThai);
 
-        DanhSach = new ObservableCollection<DeNghiCapVatTu>(
-            await query.OrderByDescending(p => p.NgayDeNghi).ToListAsync());
+            DanhSach = new ObservableCollection<DeNghiCapVatTu>(
+                await query.OrderByDescending(p => p.NgayDeNghi).ToListAsync());
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 
     partial void OnFilterTrangThaiChanged(int value) => LoadDataCommand.ExecuteAsync(null);
@@ -59,58 +68,74 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [RelayCommand]
     private async Task AddNew()
     {
-        IsNew = true;
-        IsEditing = true;
-        EditNgayDeNghi = DateTime.Now;
-        EditNguoiDeNghi = "";
-        EditBoPhan = null;
-        EditChucVu = "";
-        EditTrangThai = 0;
-        EditGhiChu = "";
-        ChiTietRows = new ObservableCollection<ChiTietDeNghiRow>();
+        try
+        {
+            ErrorMessage = "";
+            IsNew = true;
+            IsEditing = true;
+            EditNgayDeNghi = DateTime.Now;
+            EditNguoiDeNghi = "";
+            EditBoPhan = null;
+            EditChucVu = "";
+            EditTrangThai = 0;
+            EditGhiChu = "";
+            ChiTietRows = new ObservableCollection<ChiTietDeNghiRow>();
 
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var today = DateTime.Now.ToString("yyyyMMdd");
-        var prefix = $"DN-{today}-";
-        var last = await context.DeNghiCapVatTus
-            .Where(p => p.SoPhieu.StartsWith(prefix))
-            .OrderByDescending(p => p.SoPhieu)
-            .FirstOrDefaultAsync();
-        int next = 1;
-        if (last != null && int.TryParse(last.SoPhieu.Replace(prefix, ""), out int n)) next = n + 1;
-        EditSoPhieu = $"{prefix}{next:D3}";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var today = DateTime.Now.ToString("yyyyMMdd");
+            var prefix = $"DN-{today}-";
+            var last = await context.DeNghiCapVatTus
+                .Where(p => p.SoPhieu.StartsWith(prefix))
+                .OrderByDescending(p => p.SoPhieu)
+                .FirstOrDefaultAsync();
+            int next = 1;
+            if (last != null && int.TryParse(last.SoPhieu.Replace(prefix, ""), out int n)) next = n + 1;
+            EditSoPhieu = $"{prefix}{next:D3}";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tạo phiếu mới: {ex.Message}";
+        }
     }
 
     [RelayCommand]
     private async Task EditPhieu()
     {
         if (SelectedPhieu == null) return;
-        IsNew = false;
-        IsEditing = true;
+        try
+        {
+            ErrorMessage = "";
+            IsNew = false;
+            IsEditing = true;
 
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var phieu = await context.DeNghiCapVatTus
-            .Include(p => p.ChiTietDeNghis).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-            .Include(p => p.BoPhan)
-            .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-        if (phieu == null) return;
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieu = await context.DeNghiCapVatTus
+                .Include(p => p.ChiTietDeNghis).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .Include(p => p.BoPhan)
+                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
+            if (phieu == null) return;
 
-        EditSoPhieu = phieu.SoPhieu;
-        EditNgayDeNghi = phieu.NgayDeNghi;
-        EditNguoiDeNghi = phieu.NguoiDeNghi;
-        EditBoPhan = BoPhans.FirstOrDefault(b => b.Id == phieu.BoPhanId);
-        EditChucVu = phieu.ChucVu;
-        EditTrangThai = phieu.TrangThai;
-        EditGhiChu = phieu.GhiChu;
+            EditSoPhieu = phieu.SoPhieu;
+            EditNgayDeNghi = phieu.NgayDeNghi;
+            EditNguoiDeNghi = phieu.NguoiDeNghi;
+            EditBoPhan = BoPhans.FirstOrDefault(b => b.Id == phieu.BoPhanId);
+            EditChucVu = phieu.ChucVu;
+            EditTrangThai = phieu.TrangThai;
+            EditGhiChu = phieu.GhiChu;
 
-        ChiTietRows = new ObservableCollection<ChiTietDeNghiRow>(
-            phieu.ChiTietDeNghis.Select(ct => new ChiTietDeNghiRow
-            {
-                VatTu = VatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
-                SoLuongYeuCau = ct.SoLuongYeuCau,
-                SoLuongDaCap = ct.SoLuongDaCap,
-                GhiChu = ct.GhiChu
-            }));
+            ChiTietRows = new ObservableCollection<ChiTietDeNghiRow>(
+                phieu.ChiTietDeNghis.Select(ct => new ChiTietDeNghiRow
+                {
+                    VatTu = VatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
+                    SoLuongYeuCau = ct.SoLuongYeuCau,
+                    SoLuongDaCap = ct.SoLuongDaCap,
+                    GhiChu = ct.GhiChu
+                }));
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi mở phiếu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -122,63 +147,87 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
-        if (string.IsNullOrWhiteSpace(EditSoPhieu)) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        DeNghiCapVatTu phieu;
-        if (IsNew)
+        if (string.IsNullOrWhiteSpace(EditSoPhieu))
         {
-            phieu = new DeNghiCapVatTu();
-            context.DeNghiCapVatTus.Add(phieu);
-        }
-        else
-        {
-            phieu = await context.DeNghiCapVatTus
-                .Include(p => p.ChiTietDeNghis)
-                .FirstAsync(p => p.Id == SelectedPhieu!.Id);
-            phieu.ChiTietDeNghis.Clear();
+            ErrorMessage = "Vui lòng điền số phiếu.";
+            return;
         }
 
-        phieu.SoPhieu = EditSoPhieu;
-        phieu.NgayDeNghi = EditNgayDeNghi;
-        phieu.NguoiDeNghi = EditNguoiDeNghi;
-        phieu.BoPhanId = EditBoPhan?.Id;
-        phieu.ChucVu = EditChucVu;
-        phieu.TrangThai = EditTrangThai;
-        phieu.GhiChu = EditGhiChu;
-
-        foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+        try
         {
-            phieu.ChiTietDeNghis.Add(new ChiTietDeNghi
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            DeNghiCapVatTu phieu;
+            if (IsNew)
             {
-                VatTuId = row.VatTu!.Id,
-                SoLuongYeuCau = row.SoLuongYeuCau,
-                SoLuongDaCap = row.SoLuongDaCap,
-                GhiChu = row.GhiChu
-            });
-        }
+                phieu = new DeNghiCapVatTu();
+                context.DeNghiCapVatTus.Add(phieu);
+            }
+            else
+            {
+                phieu = await context.DeNghiCapVatTus
+                    .Include(p => p.ChiTietDeNghis)
+                    .FirstAsync(p => p.Id == SelectedPhieu!.Id);
+                phieu.ChiTietDeNghis.Clear();
+            }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+            phieu.SoPhieu = EditSoPhieu;
+            phieu.NgayDeNghi = EditNgayDeNghi;
+            phieu.NguoiDeNghi = EditNguoiDeNghi;
+            phieu.BoPhanId = EditBoPhan?.Id;
+            phieu.ChucVu = EditChucVu;
+            phieu.TrangThai = EditTrangThai;
+            phieu.GhiChu = EditGhiChu;
+
+            foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+            {
+                phieu.ChiTietDeNghis.Add(new ChiTietDeNghi
+                {
+                    VatTuId = row.VatTu!.Id,
+                    SoLuongYeuCau = row.SoLuongYeuCau,
+                    SoLuongDaCap = row.SoLuongDaCap,
+                    GhiChu = row.GhiChu
+                });
+            }
+
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu phiếu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
-    private void CancelEdit() => IsEditing = false;
+    private void CancelEdit()
+    {
+        IsEditing = false;
+        ErrorMessage = "";
+    }
 
     [RelayCommand]
     private async Task DeletePhieu()
     {
         if (SelectedPhieu == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.DeNghiCapVatTus.FindAsync(SelectedPhieu.Id);
-        if (entity != null)
+        try
         {
-            context.DeNghiCapVatTus.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.DeNghiCapVatTus.FindAsync(SelectedPhieu.Id);
+            if (entity != null)
+            {
+                context.DeNghiCapVatTus.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa phiếu: {ex.Message}";
+        }
     }
 }
 

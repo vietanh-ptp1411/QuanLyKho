@@ -1,5 +1,6 @@
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Infrastructure;
 using QuanLyKho.Data;
@@ -16,11 +17,21 @@ public partial class App : Application
     {
         QuestPDF.Settings.License = LicenseType.Community;
 
+        // Load configuration
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+
         var services = new ServiceCollection();
+
+        // Bind AppSettings
+        var appSettings = configuration.Get<AppSettings>() ?? new AppSettings();
+        services.AddSingleton(appSettings);
 
         // Database
         services.AddDbContextFactory<AppDbContext>(options =>
-            options.UseSqlite("Data Source=quanlykho.db"));
+            options.UseSqlite(appSettings.Database.ConnectionString));
 
         // Services
         services.AddSingleton<INavigationService, NavigationService>();
@@ -51,13 +62,21 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // Ensure database is created
-        var contextFactory = _serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
-        using var context = contextFactory.CreateDbContext();
-        context.Database.EnsureCreated();
+        try
+        {
+            // Ensure database is created
+            var contextFactory = _serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+            using var context = contextFactory.CreateDbContext();
+            context.Database.EnsureCreated();
 
-        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-        mainWindow.DataContext = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainWindow.Show();
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = _serviceProvider.GetRequiredService<MainViewModel>();
+            mainWindow.Show();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khởi động ứng dụng:\n{ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+        }
     }
 }

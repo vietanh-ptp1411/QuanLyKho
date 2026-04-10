@@ -16,6 +16,7 @@ public partial class BoPhanViewModel : ObservableObject
     [ObservableProperty] private bool _isEditing;
     [ObservableProperty] private string _editTenBoPhan = "";
     [ObservableProperty] private bool _isNew;
+    [ObservableProperty] private string _errorMessage = "";
 
     public BoPhanViewModel(IDbContextFactory<AppDbContext> contextFactory)
     {
@@ -26,9 +27,17 @@ public partial class BoPhanViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var items = await context.BoPhans.OrderBy(x => x.TenBoPhan).ToListAsync();
-        DanhSach = new ObservableCollection<BoPhan>(items);
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var items = await context.BoPhans.OrderBy(x => x.TenBoPhan).ToListAsync();
+            DanhSach = new ObservableCollection<BoPhan>(items);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -38,6 +47,7 @@ public partial class BoPhanViewModel : ObservableObject
         IsEditing = true;
         EditTenBoPhan = "";
         SelectedItem = null;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
@@ -47,44 +57,69 @@ public partial class BoPhanViewModel : ObservableObject
         IsNew = false;
         IsEditing = true;
         EditTenBoPhan = SelectedItem.TenBoPhan;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
     private async Task Save()
     {
-        if (string.IsNullOrWhiteSpace(EditTenBoPhan)) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        if (IsNew)
+        if (string.IsNullOrWhiteSpace(EditTenBoPhan))
         {
-            context.BoPhans.Add(new BoPhan { TenBoPhan = EditTenBoPhan.Trim() });
-        }
-        else if (SelectedItem != null)
-        {
-            var entity = await context.BoPhans.FindAsync(SelectedItem.Id);
-            if (entity != null) entity.TenBoPhan = EditTenBoPhan.Trim();
+            ErrorMessage = "Vui lòng nhập tên bộ phận.";
+            return;
         }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            if (IsNew)
+            {
+                context.BoPhans.Add(new BoPhan { TenBoPhan = EditTenBoPhan.Trim() });
+            }
+            else if (SelectedItem != null)
+            {
+                var entity = await context.BoPhans.FindAsync(SelectedItem.Id);
+                if (entity != null) entity.TenBoPhan = EditTenBoPhan.Trim();
+            }
+
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
-    private void Cancel() => IsEditing = false;
+    private void Cancel()
+    {
+        IsEditing = false;
+        ErrorMessage = "";
+    }
 
     [RelayCommand]
     private async Task Delete()
     {
         if (SelectedItem == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.BoPhans.FindAsync(SelectedItem.Id);
-        if (entity != null)
+        try
         {
-            context.BoPhans.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.BoPhans.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.BoPhans.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa bộ phận: {ex.Message}";
+        }
     }
 }

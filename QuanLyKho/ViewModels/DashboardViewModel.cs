@@ -15,6 +15,7 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private int _soPhieuXuatThang;
     [ObservableProperty] private decimal _tongGiaTriNhapThang;
     [ObservableProperty] private decimal _tongGiaTriXuatThang;
+    [ObservableProperty] private string _errorMessage = "";
 
     public DashboardViewModel(IDbContextFactory<AppDbContext> contextFactory)
     {
@@ -25,19 +26,27 @@ public partial class DashboardViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var now = DateTime.Now;
-        var startOfMonth = new DateTime(now.Year, now.Month, 1);
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var now = DateTime.Now;
+            var startOfMonth = new DateTime(now.Year, now.Month, 1);
 
-        TongSoVatTu = await context.VatTus.CountAsync();
-        TongSoKho = await context.Khos.CountAsync();
-        SoPhieuNhapThang = await context.PhieuNhapKhos.CountAsync(p => p.NgayNhap >= startOfMonth);
-        SoPhieuXuatThang = await context.PhieuXuatKhos.CountAsync(p => p.NgayXuat >= startOfMonth);
-        TongGiaTriNhapThang = await context.PhieuNhapKhos
-            .Where(p => p.NgayNhap >= startOfMonth)
-            .SumAsync(p => p.TongTien);
-        TongGiaTriXuatThang = await context.PhieuXuatKhos
-            .Where(p => p.NgayXuat >= startOfMonth)
-            .SumAsync(p => p.TongTien);
+            TongSoVatTu = await context.VatTus.CountAsync();
+            TongSoKho = await context.Khos.CountAsync();
+            SoPhieuNhapThang = await context.PhieuNhapKhos.CountAsync(p => p.NgayNhap >= startOfMonth);
+            SoPhieuXuatThang = await context.PhieuXuatKhos.CountAsync(p => p.NgayXuat >= startOfMonth);
+            TongGiaTriNhapThang = await context.PhieuNhapKhos
+                .Where(p => p.NgayNhap >= startOfMonth)
+                .SumAsync(p => p.TongTien);
+            TongGiaTriXuatThang = await context.PhieuXuatKhos
+                .Where(p => p.NgayXuat >= startOfMonth)
+                .SumAsync(p => p.TongTien);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 }

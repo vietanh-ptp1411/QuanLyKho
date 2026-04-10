@@ -17,6 +17,7 @@ public partial class VatTuViewModel : ObservableObject
     [ObservableProperty] private NhomVatTu? _filterNhom;
     [ObservableProperty] private ObservableCollection<NhomVatTu> _nhomVatTus = new();
     [ObservableProperty] private ObservableCollection<DonViTinh> _donViTinhs = new();
+    [ObservableProperty] private string _errorMessage = "";
 
     // Edit fields
     [ObservableProperty] private bool _isEditing;
@@ -36,26 +37,34 @@ public partial class VatTuViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        NhomVatTus = new ObservableCollection<NhomVatTu>(await context.NhomVatTus.OrderBy(x => x.TenNhom).ToListAsync());
-        DonViTinhs = new ObservableCollection<DonViTinh>(await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync());
-
-        var query = context.VatTus.Include(x => x.NhomVatTu).Include(x => x.DonViTinh).AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(SearchText))
+        try
         {
-            var search = SearchText.Trim().ToLower();
-            query = query.Where(x => x.MaVatTu.ToLower().Contains(search) || x.TenVatTu.ToLower().Contains(search));
-        }
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
 
-        if (FilterNhom != null)
+            NhomVatTus = new ObservableCollection<NhomVatTu>(await context.NhomVatTus.OrderBy(x => x.TenNhom).ToListAsync());
+            DonViTinhs = new ObservableCollection<DonViTinh>(await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync());
+
+            var query = context.VatTus.Include(x => x.NhomVatTu).Include(x => x.DonViTinh).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var search = SearchText.Trim().ToLower();
+                query = query.Where(x => x.MaVatTu.ToLower().Contains(search) || x.TenVatTu.ToLower().Contains(search));
+            }
+
+            if (FilterNhom != null)
+            {
+                query = query.Where(x => x.NhomVatTuId == FilterNhom.Id);
+            }
+
+            var items = await query.OrderBy(x => x.MaVatTu).ToListAsync();
+            DanhSach = new ObservableCollection<VatTu>(items);
+        }
+        catch (Exception ex)
         {
-            query = query.Where(x => x.NhomVatTuId == FilterNhom.Id);
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
         }
-
-        var items = await query.OrderBy(x => x.MaVatTu).ToListAsync();
-        DanhSach = new ObservableCollection<VatTu>(items);
     }
 
     partial void OnSearchTextChanged(string value) => LoadDataCommand.ExecuteAsync(null);
@@ -90,37 +99,49 @@ public partial class VatTuViewModel : ObservableObject
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(EditMaVatTu) || string.IsNullOrWhiteSpace(EditTenVatTu)
-            || EditNhomVatTu == null || EditDonViTinh == null) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        if (IsNew)
+            || EditNhomVatTu == null || EditDonViTinh == null)
         {
-            context.VatTus.Add(new VatTu
-            {
-                MaVatTu = EditMaVatTu.Trim(),
-                TenVatTu = EditTenVatTu.Trim(),
-                NhomVatTuId = EditNhomVatTu.Id,
-                DonViTinhId = EditDonViTinh.Id,
-                GhiChu = EditGhiChu.Trim()
-            });
+            ErrorMessage = "Vui lòng điền đầy đủ thông tin bắt buộc.";
+            return;
         }
-        else if (SelectedItem != null)
+
+        try
         {
-            var entity = await context.VatTus.FindAsync(SelectedItem.Id);
-            if (entity != null)
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            if (IsNew)
             {
-                entity.MaVatTu = EditMaVatTu.Trim();
-                entity.TenVatTu = EditTenVatTu.Trim();
-                entity.NhomVatTuId = EditNhomVatTu.Id;
-                entity.DonViTinhId = EditDonViTinh.Id;
-                entity.GhiChu = EditGhiChu.Trim();
+                context.VatTus.Add(new VatTu
+                {
+                    MaVatTu = EditMaVatTu.Trim(),
+                    TenVatTu = EditTenVatTu.Trim(),
+                    NhomVatTuId = EditNhomVatTu.Id,
+                    DonViTinhId = EditDonViTinh.Id,
+                    GhiChu = EditGhiChu.Trim()
+                });
             }
-        }
+            else if (SelectedItem != null)
+            {
+                var entity = await context.VatTus.FindAsync(SelectedItem.Id);
+                if (entity != null)
+                {
+                    entity.MaVatTu = EditMaVatTu.Trim();
+                    entity.TenVatTu = EditTenVatTu.Trim();
+                    entity.NhomVatTuId = EditNhomVatTu.Id;
+                    entity.DonViTinhId = EditDonViTinh.Id;
+                    entity.GhiChu = EditGhiChu.Trim();
+                }
+            }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -130,13 +151,21 @@ public partial class VatTuViewModel : ObservableObject
     private async Task Delete()
     {
         if (SelectedItem == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.VatTus.FindAsync(SelectedItem.Id);
-        if (entity != null)
+        try
         {
-            context.VatTus.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.VatTus.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.VatTus.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa vật tư: {ex.Message}";
+        }
     }
 }

@@ -17,6 +17,7 @@ public partial class NhomVatTuViewModel : ObservableObject
     [ObservableProperty] private string _editMaNhom = "";
     [ObservableProperty] private string _editTenNhom = "";
     [ObservableProperty] private bool _isNew;
+    [ObservableProperty] private string _errorMessage = "";
 
     public NhomVatTuViewModel(IDbContextFactory<AppDbContext> contextFactory)
     {
@@ -27,9 +28,17 @@ public partial class NhomVatTuViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadData()
     {
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var items = await context.NhomVatTus.OrderBy(x => x.MaNhom).ToListAsync();
-        DanhSach = new ObservableCollection<NhomVatTu>(items);
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var items = await context.NhomVatTus.OrderBy(x => x.MaNhom).ToListAsync();
+            DanhSach = new ObservableCollection<NhomVatTu>(items);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -40,6 +49,7 @@ public partial class NhomVatTuViewModel : ObservableObject
         EditMaNhom = "";
         EditTenNhom = "";
         SelectedItem = null;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
@@ -50,52 +60,74 @@ public partial class NhomVatTuViewModel : ObservableObject
         IsEditing = true;
         EditMaNhom = SelectedItem.MaNhom;
         EditTenNhom = SelectedItem.TenNhom;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
     private async Task Save()
     {
-        if (string.IsNullOrWhiteSpace(EditMaNhom) || string.IsNullOrWhiteSpace(EditTenNhom)) return;
-
-        using var context = await _contextFactory.CreateDbContextAsync();
-
-        if (IsNew)
+        if (string.IsNullOrWhiteSpace(EditMaNhom) || string.IsNullOrWhiteSpace(EditTenNhom))
         {
-            var entity = new NhomVatTu { MaNhom = EditMaNhom.Trim(), TenNhom = EditTenNhom.Trim() };
-            context.NhomVatTus.Add(entity);
+            ErrorMessage = "Vui lòng điền đầy đủ thông tin.";
+            return;
         }
-        else if (SelectedItem != null)
+
+        try
         {
-            var entity = await context.NhomVatTus.FindAsync(SelectedItem.Id);
-            if (entity != null)
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            if (IsNew)
             {
-                entity.MaNhom = EditMaNhom.Trim();
-                entity.TenNhom = EditTenNhom.Trim();
+                var entity = new NhomVatTu { MaNhom = EditMaNhom.Trim(), TenNhom = EditTenNhom.Trim() };
+                context.NhomVatTus.Add(entity);
             }
-        }
+            else if (SelectedItem != null)
+            {
+                var entity = await context.NhomVatTus.FindAsync(SelectedItem.Id);
+                if (entity != null)
+                {
+                    entity.MaNhom = EditMaNhom.Trim();
+                    entity.TenNhom = EditTenNhom.Trim();
+                }
+            }
 
-        await context.SaveChangesAsync();
-        IsEditing = false;
-        await LoadData();
+            await context.SaveChangesAsync();
+            IsEditing = false;
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi lưu dữ liệu: {ex.Message}";
+        }
     }
 
     [RelayCommand]
     private void Cancel()
     {
         IsEditing = false;
+        ErrorMessage = "";
     }
 
     [RelayCommand]
     private async Task Delete()
     {
         if (SelectedItem == null) return;
-        using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.NhomVatTus.FindAsync(SelectedItem.Id);
-        if (entity != null)
+        try
         {
-            context.NhomVatTus.Remove(entity);
-            await context.SaveChangesAsync();
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.NhomVatTus.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.NhomVatTus.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
         }
-        await LoadData();
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa nhóm vật tư: {ex.Message}";
+        }
     }
 }
