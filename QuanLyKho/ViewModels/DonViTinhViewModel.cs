@@ -61,6 +61,17 @@ public partial class DonViTinhViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void EditItem(DonViTinh? item)
+    {
+        if (item == null) return;
+        SelectedItem = item;
+        IsNew = false;
+        IsEditing = true;
+        EditTenDonVi = item.TenDonVi;
+        ErrorMessage = "";
+    }
+
+    [RelayCommand]
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(EditTenDonVi))
@@ -110,6 +121,28 @@ public partial class DonViTinhViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
             var entity = await context.DonViTinhs.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.DonViTinhs.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa đơn vị tính: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteItem(DonViTinh? item)
+    {
+        if (item == null) return;
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.DonViTinhs.FindAsync(item.Id);
             if (entity != null)
             {
                 context.DonViTinhs.Remove(entity);

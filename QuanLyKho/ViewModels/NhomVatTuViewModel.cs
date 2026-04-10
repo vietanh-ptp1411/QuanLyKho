@@ -64,6 +64,18 @@ public partial class NhomVatTuViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void EditItem(NhomVatTu? item)
+    {
+        if (item == null) return;
+        SelectedItem = item;
+        IsNew = false;
+        IsEditing = true;
+        EditMaNhom = item.MaNhom;
+        EditTenNhom = item.TenNhom;
+        ErrorMessage = "";
+    }
+
+    [RelayCommand]
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(EditMaNhom) || string.IsNullOrWhiteSpace(EditTenNhom))
@@ -118,6 +130,28 @@ public partial class NhomVatTuViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
             var entity = await context.NhomVatTus.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.NhomVatTus.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa nhóm vật tư: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteItem(NhomVatTu? item)
+    {
+        if (item == null) return;
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.NhomVatTus.FindAsync(item.Id);
             if (entity != null)
             {
                 context.NhomVatTus.Remove(entity);

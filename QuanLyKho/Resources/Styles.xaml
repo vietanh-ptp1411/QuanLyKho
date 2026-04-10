@@ -2,6 +2,48 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
+    <!-- Tiêu đề trang màu đỏ căn giữa -->
+    <Style x:Key="PageTitleRed" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="#D32F2F"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,10,0,20"/>
+    </Style>
+
+    <!-- Nút thêm mới màu xanh lá -->
+    <Style x:Key="BtnAddGreen" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="#4CAF50"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="4"/>
+    </Style>
+
+    <!-- Nút Sửa nhỏ trong DataGrid - xanh lá -->
+    <Style x:Key="BtnGridEdit" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="#4CAF50"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="12,4"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="MinWidth" Value="50"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="4"/>
+    </Style>
+
+    <!-- Nút Xóa nhỏ trong DataGrid - đỏ -->
+    <Style x:Key="BtnGridDelete" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="#F44336"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="12,4"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="MinWidth" Value="50"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="4"/>
+    </Style>
+
     <!-- Nút chính: nền đỏ, chữ trắng, to rõ -->
     <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
         <Setter Property="Background" Value="#C62828"/>
@@ -98,6 +140,32 @@
     <Style x:Key="FormDatePicker" TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
         <Setter Property="materialDesign:HintAssist.IsFloating" Value="False"/>
         <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <!-- DataGrid với header xanh dương và zebra stripes -->
+    <Style x:Key="StyledDataGrid" TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="RowHeight" Value="40"/>
+        <Setter Property="ColumnHeaderHeight" Value="42"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="#E0E0E0"/>
+        <Setter Property="BorderBrush" Value="#E0E0E0"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+        <Setter Property="RowBackground" Value="White"/>
+    </Style>
+
+    <!-- Header style cho DataGrid - xanh dương -->
+    <Style x:Key="BlueColumnHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+        <Setter Property="Background" Value="#2196F3"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
     </Style>
 
 </ResourceDictionary>

@@ -3,108 +3,166 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <!-- List View -->
+        <Grid Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <DockPanel Margin="0,0,0,8">
-            <TextBlock Text="Vật tư" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Command="{Binding AddCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Thêm vật tư"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding EditCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Pencil" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Sửa"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding DeleteCommand}" Style="{StaticResource BtnDelete}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Xóa"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </DockPanel>
+            <!-- Tiêu đề màu đỏ căn giữa -->
+            <TextBlock Text="QUẢN LÝ VẬT TƯ" Style="{StaticResource PageTitleRed}"/>
 
-        <!-- Search bar -->
-        <WrapPanel Grid.Row="1" Margin="0,0,0,8">
-            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}"
-                     Width="280" materialDesign:HintAssist.Hint="Tìm theo mã hoặc tên vật tư..."
-                     Style="{StaticResource FilterTextBox}"
-                     Margin="0,0,10,0"/>
-            <ComboBox ItemsSource="{Binding NhomVatTus}" SelectedItem="{Binding FilterNhom}"
-                      DisplayMemberPath="TenNhom" Width="200"
-                      materialDesign:HintAssist.Hint="Lọc nhóm VT"
-                      Style="{StaticResource FilterComboBox}"
-                      materialDesign:TextFieldAssist.HasClearButton="True"/>
-        </WrapPanel>
+            <!-- Nút thêm mới bên trái -->
+            <Button Grid.Row="1" Command="{Binding AddCommand}" Style="{StaticResource BtnAddGreen}"
+                    HorizontalAlignment="Left" Margin="0,0,0,15">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="Thêm vật tư"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Search bar -->
+            <WrapPanel Grid.Row="2" Margin="0,0,0,15">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}"
+                         Width="280" materialDesign:HintAssist.Hint="Tìm theo mã hoặc tên vật tư..."
+                         Style="{StaticResource FilterTextBox}"
+                         Margin="0,0,10,0"/>
+                <ComboBox ItemsSource="{Binding NhomVatTus}" SelectedItem="{Binding FilterNhom}"
+                          DisplayMemberPath="TenNhom" Width="200"
+                          materialDesign:HintAssist.Hint="Lọc nhóm VT"
+                          Style="{StaticResource FilterComboBox}"
+                          materialDesign:TextFieldAssist.HasClearButton="True"/>
+            </WrapPanel>
+
+            <!-- DataGrid giữ nguyên -->
+            <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedItem}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                      FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
+                      Style="{StaticResource MaterialDesignDataGrid}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã VT" Binding="{Binding MaVatTu}" Width="120"/>
+                    <DataGridTextColumn Header="Tên vật tư" Binding="{Binding TenVatTu}" Width="*"/>
+                    <DataGridTextColumn Header="Nhóm vật tư" Binding="{Binding NhomVatTu.TenNhom}" Width="180"/>
+                    <DataGridTextColumn Header="ĐVT" Binding="{Binding DonViTinh.TenDonVi}" Width="100"/>
+                    <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu}" Width="200"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
 
         <!-- Edit Form -->
-        <materialDesign:Card Grid.Row="2" Padding="16" Margin="0,0,0,8"
-                             Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
-            <StackPanel>
-                <WrapPanel>
-                    <StackPanel Margin="0,0,12,8">
-                        <TextBlock Text="Mã vật tư *" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding EditMaVatTu, UpdateSourceTrigger=PropertyChanged}" Width="150"
-                                 Style="{StaticResource FormTextBox}"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,0,12,8">
-                        <TextBlock Text="Tên vật tư *" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding EditTenVatTu, UpdateSourceTrigger=PropertyChanged}" Width="300"
-                                 Style="{StaticResource FormTextBox}"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,0,12,8">
-                        <TextBlock Text="Nhóm vật tư" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding NhomVatTus}" SelectedItem="{Binding EditNhomVatTu}"
-                                  DisplayMemberPath="TenNhom" Width="180"
-                                  Style="{StaticResource FormComboBox}"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,0,12,8">
-                        <TextBlock Text="Đơn vị tính" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding DonViTinhs}" SelectedItem="{Binding EditDonViTinh}"
-                                  DisplayMemberPath="TenDonVi" Width="140"
-                                  Style="{StaticResource FormComboBox}"/>
-                    </StackPanel>
-                </WrapPanel>
-                <StackPanel Margin="0,0,0,8">
-                    <TextBlock Text="Ghi chú" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                    <TextBox Text="{Binding EditGhiChu, UpdateSourceTrigger=PropertyChanged}" Width="500" HorizontalAlignment="Left"
-                             Style="{StaticResource FormTextBox}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnSave}" Margin="0,0,8,0">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <TextBlock Text="Lưu"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Content="Hủy" Command="{Binding CancelCommand}" Style="{StaticResource BtnCancel}"/>
-                </StackPanel>
-            </StackPanel>
-        </materialDesign:Card>
+        <ScrollViewer Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedItem}"
-                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
-                  FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
-                  Style="{StaticResource MaterialDesignDataGrid}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Mã VT" Binding="{Binding MaVatTu}" Width="100"/>
-                <DataGridTextColumn Header="Tên vật tư" Binding="{Binding TenVatTu}" Width="*"/>
-                <DataGridTextColumn Header="Nhóm" Binding="{Binding NhomVatTu.TenNhom}" Width="150"/>
-                <DataGridTextColumn Header="ĐVT" Binding="{Binding DonViTinh.TenDonVi}" Width="90"/>
-                <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu}" Width="200"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                <!-- Tiêu đề form -->
+                <TextBlock HorizontalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource PageTitleRed}">
+                            <Setter Property="Text" Value="SỬA VẬT TƯ"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsNew}" Value="True">
+                                    <Setter Property="Text" Value="THÊM VẬT TƯ MỚI"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- Paper Form -->
+                <Border Grid.Row="1" Background="White" BorderBrush="#CCCCCC" BorderThickness="1"
+                        Padding="40,30" MaxWidth="700" HorizontalAlignment="Center">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15"/>
+                    </Border.Effect>
+
+                    <StackPanel>
+                        <!-- Title -->
+                        <TextBlock Text="THÔNG TIN VẬT TƯ" FontWeight="Bold" FontSize="18"
+                                   HorizontalAlignment="Center" Margin="0,0,0,25"/>
+
+                        <!-- Form Fields -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Mã vật tư -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Mã vật tư:" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,15,15"/>
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding EditMaVatTu, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="13" Padding="8,6" Margin="0,0,0,15"
+                                     BorderThickness="0,0,0,1" BorderBrush="#999" Background="Transparent"/>
+
+                            <!-- Tên vật tư -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Tên vật tư:" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,15,15"/>
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                                     Text="{Binding EditTenVatTu, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="13" Padding="8,6" Margin="0,0,0,15"
+                                     BorderThickness="0,0,0,1" BorderBrush="#999" Background="Transparent"/>
+
+                            <!-- Nhóm vật tư -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Nhóm vật tư:" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,15,15"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1"
+                                      ItemsSource="{Binding NhomVatTus}" SelectedItem="{Binding EditNhomVatTu}"
+                                      DisplayMemberPath="TenNhom" FontSize="13" Margin="0,0,0,15"
+                                      BorderThickness="0,0,0,1" BorderBrush="#999" Background="Transparent"
+                                      materialDesign:HintAssist.Hint="Chọn nhóm vật tư"/>
+
+                            <!-- Đơn vị tính -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Đơn vị tính:" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,15,15"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1"
+                                      ItemsSource="{Binding DonViTinhs}" SelectedItem="{Binding EditDonViTinh}"
+                                      DisplayMemberPath="TenDonVi" FontSize="13" Margin="0,0,0,15"
+                                      BorderThickness="0,0,0,1" BorderBrush="#999" Background="Transparent"
+                                      materialDesign:HintAssist.Hint="Chọn đơn vị tính"/>
+
+                            <!-- Ghi chú -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Ghi chú:" FontSize="13"
+                                       VerticalAlignment="Top" Margin="0,8,15,0"/>
+                            <TextBox Grid.Row="4" Grid.Column="1"
+                                     Text="{Binding EditGhiChu, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="13" Padding="8,6" TextWrapping="Wrap"
+                                     MinHeight="60" AcceptsReturn="True"
+                                     BorderThickness="1" BorderBrush="#CCC" Background="#FAFAFA"/>
+                        </Grid>
+
+                        <!-- Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,25,0,0">
+                            <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnSave}" Margin="0,0,8,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Lưu"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Content="Quay lại" Command="{Binding CancelCommand}" Style="{StaticResource BtnCancel}"/>
+                        </StackPanel>
+
+                        <!-- Error Message -->
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" FontSize="12"
+                                   Margin="0,15,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -67,6 +67,19 @@ public partial class KhoViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void EditItem(Kho? item)
+    {
+        if (item == null) return;
+        SelectedItem = item;
+        IsNew = false;
+        IsEditing = true;
+        EditMaKho = item.MaKho;
+        EditTenKho = item.TenKho;
+        EditDiaChi = item.DiaChi;
+        ErrorMessage = "";
+    }
+
+    [RelayCommand]
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(EditMaKho) || string.IsNullOrWhiteSpace(EditTenKho))
@@ -126,6 +139,28 @@ public partial class KhoViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
             var entity = await context.Khos.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.Khos.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa kho: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteItem(Kho? item)
+    {
+        if (item == null) return;
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.Khos.FindAsync(item.Id);
             if (entity != null)
             {
                 context.Khos.Remove(entity);

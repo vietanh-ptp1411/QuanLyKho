@@ -96,6 +96,20 @@ public partial class VatTuViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void EditItem(VatTu? item)
+    {
+        if (item == null) return;
+        SelectedItem = item;
+        IsNew = false;
+        IsEditing = true;
+        EditMaVatTu = item.MaVatTu;
+        EditTenVatTu = item.TenVatTu;
+        EditNhomVatTu = NhomVatTus.FirstOrDefault(x => x.Id == item.NhomVatTuId);
+        EditDonViTinh = DonViTinhs.FirstOrDefault(x => x.Id == item.DonViTinhId);
+        EditGhiChu = item.GhiChu;
+    }
+
+    [RelayCommand]
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(EditMaVatTu) || string.IsNullOrWhiteSpace(EditTenVatTu)
@@ -156,6 +170,28 @@ public partial class VatTuViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
             var entity = await context.VatTus.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.VatTus.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa vật tư: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteItem(VatTu? item)
+    {
+        if (item == null) return;
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.VatTus.FindAsync(item.Id);
             if (entity != null)
             {
                 context.VatTus.Remove(entity);

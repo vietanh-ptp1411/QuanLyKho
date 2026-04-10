@@ -6,34 +6,24 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Margin="0,0,0,10">
-            <TextBlock Text="Bộ phận" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Command="{Binding AddCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Thêm mới"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding EditCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Pencil" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Sửa"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding DeleteCommand}" Style="{StaticResource BtnDelete}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Xóa"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </DockPanel>
+        <!-- Tiêu đề màu đỏ căn giữa -->
+        <TextBlock Text="QUẢN LÝ BỘ PHẬN" Style="{StaticResource PageTitleRed}"/>
 
-        <materialDesign:Card Grid.Row="1" Padding="16" Margin="0,0,0,8"
+        <!-- Nút thêm mới bên trái -->
+        <Button Grid.Row="1" Command="{Binding AddCommand}" Style="{StaticResource BtnAddGreen}"
+                HorizontalAlignment="Left" Margin="0,0,0,15">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock Text="Thêm bộ phận"/>
+            </StackPanel>
+        </Button>
+
+        <!-- Form chỉnh sửa -->
+        <materialDesign:Card Grid.Row="2" Padding="16" Margin="0,0,0,15"
                              Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
             <StackPanel>
                 <StackPanel Margin="0,0,0,8">
@@ -54,7 +44,8 @@
             </StackPanel>
         </materialDesign:Card>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedItem}"
+        <!-- DataGrid giữ nguyên -->
+        <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedItem}"
                   AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                   FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
                   Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"

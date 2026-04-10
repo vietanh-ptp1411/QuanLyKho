@@ -61,6 +61,17 @@ public partial class BoPhanViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void EditItem(BoPhan? item)
+    {
+        if (item == null) return;
+        SelectedItem = item;
+        IsNew = false;
+        IsEditing = true;
+        EditTenBoPhan = item.TenBoPhan;
+        ErrorMessage = "";
+    }
+
+    [RelayCommand]
     private async Task Save()
     {
         if (string.IsNullOrWhiteSpace(EditTenBoPhan))
@@ -110,6 +121,28 @@ public partial class BoPhanViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
             var entity = await context.BoPhans.FindAsync(SelectedItem.Id);
+            if (entity != null)
+            {
+                context.BoPhans.Remove(entity);
+                await context.SaveChangesAsync();
+            }
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xóa bộ phận: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteItem(BoPhan? item)
+    {
+        if (item == null) return;
+        try
+        {
+            ErrorMessage = "";
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.BoPhans.FindAsync(item.Id);
             if (entity != null)
             {
                 context.BoPhans.Remove(entity);
