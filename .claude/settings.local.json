@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(dotnet restore:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(tree:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nCập nhật UI các tab danh mục\n\n- Tiêu đề màu đỏ căn giữa \\(VD: QUẢN LÝ VẬT TƯ\\)\n- Nút thêm màu xanh lá nằm bên trái\n- Thêm styles mới: PageTitleRed, BtnAddGreen, BtnGridEdit, BtnGridDelete\n- Thêm EditItemCommand và DeleteItemCommand vào ViewModels\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
     ]
   }
 }

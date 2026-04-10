@@ -1,0 +1,34 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+publish/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+*.exe
+*.dll
+*.pdb
+*.cache
+
+# NuGet
+packages/
+*.nupkg
+
+# Other
+*.log
+*.tmp
+*.bak
+*.zip
+
+# Keep specific files if needed
+!.gitkeep
