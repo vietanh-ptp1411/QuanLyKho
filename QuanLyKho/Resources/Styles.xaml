@@ -2,120 +2,275 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
-    <!-- Tiêu đề trang màu đỏ căn giữa -->
-    <Style x:Key="PageTitleRed" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="26"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Foreground" Value="#D32F2F"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Margin" Value="0,10,0,20"/>
-    </Style>
+    <!-- ═══════════════════════════════════════════════════════════════
+         COLOR SYSTEM — Slate + Blue Professional Palette
+         Tuân thủ WCAG 2.1 contrast ratio cho text
+         ═══════════════════════════════════════════════════════════════ -->
 
-    <!-- Nút thêm mới màu xanh lá -->
-    <Style x:Key="BtnAddGreen" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-        <Setter Property="Background" Value="#4CAF50"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="Height" Value="36"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="4"/>
-    </Style>
+    <SolidColorBrush x:Key="AppBg"            Color="#F1F5F9"/>
+    <SolidColorBrush x:Key="CardBg"           Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SidebarBg"        Color="#0F172A"/>
 
-    <!-- Nút Sửa nhỏ trong DataGrid - xanh lá -->
-    <Style x:Key="BtnGridEdit" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-        <Setter Property="Background" Value="#4CAF50"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Padding" Value="12,4"/>
-        <Setter Property="Height" Value="28"/>
-        <Setter Property="MinWidth" Value="50"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="4"/>
-    </Style>
+    <SolidColorBrush x:Key="Primary"          Color="#2563EB"/>
+    <SolidColorBrush x:Key="PrimaryDark"      Color="#1D4ED8"/>
+    <SolidColorBrush x:Key="PrimaryLight"     Color="#DBEAFE"/>
 
-    <!-- Nút Xóa nhỏ trong DataGrid - đỏ -->
-    <Style x:Key="BtnGridDelete" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-        <Setter Property="Background" Value="#F44336"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Padding" Value="12,4"/>
-        <Setter Property="Height" Value="28"/>
-        <Setter Property="MinWidth" Value="50"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="4"/>
-    </Style>
+    <SolidColorBrush x:Key="Success"          Color="#059669"/>
+    <SolidColorBrush x:Key="SuccessLight"     Color="#D1FAE5"/>
+    <SolidColorBrush x:Key="Danger"           Color="#DC2626"/>
+    <SolidColorBrush x:Key="DangerLight"      Color="#FEE2E2"/>
+    <SolidColorBrush x:Key="Warning"          Color="#D97706"/>
+    <SolidColorBrush x:Key="WarningLight"     Color="#FEF3C7"/>
+    <SolidColorBrush x:Key="Info"             Color="#0891B2"/>
+    <SolidColorBrush x:Key="InfoLight"        Color="#CFFAFE"/>
 
-    <!-- Nút chính: nền đỏ, chữ trắng, to rõ -->
-    <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-        <Setter Property="Background" Value="#C62828"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="Height" Value="38"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
-    </Style>
+    <SolidColorBrush x:Key="TextPrimary"      Color="#0F172A"/>
+    <SolidColorBrush x:Key="TextSecondary"    Color="#64748B"/>
+    <SolidColorBrush x:Key="TextMuted"        Color="#94A3B8"/>
 
-    <!-- Nút phụ: nền xanh -->
-    <Style x:Key="BtnSecondary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-        <Setter Property="Background" Value="#1565C0"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="Height" Value="38"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
-    </Style>
+    <SolidColorBrush x:Key="Border"           Color="#E2E8F0"/>
+    <SolidColorBrush x:Key="BorderLight"      Color="#F1F5F9"/>
+    <SolidColorBrush x:Key="RowHover"         Color="#EFF6FF"/>
+    <SolidColorBrush x:Key="RowSelected"      Color="#DBEAFE"/>
 
-    <!-- Nút xanh lá (Lưu) -->
-    <Style x:Key="BtnSave" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-        <Setter Property="Background" Value="#2E7D32"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="20,8"/>
-        <Setter Property="Height" Value="38"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
-    </Style>
+    <Color x:Key="PrimaryColor">#2563EB</Color>
+    <Color x:Key="SuccessColor">#059669</Color>
+    <Color x:Key="DangerColor">#DC2626</Color>
 
-    <!-- Nút xóa: đỏ viền -->
-    <Style x:Key="BtnDelete" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-        <Setter Property="BorderBrush" Value="#C62828"/>
-        <Setter Property="Foreground" Value="#C62828"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="Height" Value="38"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
-    </Style>
+    <!-- Excel export button -->
+    <SolidColorBrush x:Key="ExcelGreen"       Color="#16A34A"/>
 
-    <!-- Nút hủy: xám -->
-    <Style x:Key="BtnCancel" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="Height" Value="38"/>
-        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
-    </Style>
+    <!-- ═══════════════════════════════════════════════════════════════
+         TYPOGRAPHY
+         ═══════════════════════════════════════════════════════════════ -->
 
-    <!-- Tiêu đề trang -->
     <Style x:Key="PageTitle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="22"/>
+        <Setter Property="FontSize" Value="28"/>
         <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,4,0,20"/>
     </Style>
 
-    <!-- Compact TextBox for filter bars -->
+    <Style x:Key="PageTitleRed" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource Primary}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,4,0,20"/>
+    </Style>
+
+    <Style x:Key="SectionTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         BUTTONS — 8px border-radius, consistent height 38px
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="{StaticResource Primary}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="20,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="BtnSecondary" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="#475569"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="BtnAddGreen" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="{StaticResource Success}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="20,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="BtnSave" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="{StaticResource Success}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="20,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="BtnDelete" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="BorderBrush" Value="{StaticResource Danger}"/>
+        <Setter Property="Foreground" Value="{StaticResource Danger}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+    </Style>
+
+    <Style x:Key="BtnCancel" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="BorderBrush" Value="#CBD5E1"/>
+        <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+    </Style>
+
+    <Style x:Key="BtnExcel" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="Background" Value="{StaticResource ExcelGreen}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- Grid action buttons (outlined, visible) -->
+    <Style x:Key="BtnGridEdit" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="Foreground" Value="{StaticResource Primary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="10,2"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6"/>
+    </Style>
+
+    <Style x:Key="BtnGridDelete" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="Foreground" Value="{StaticResource Danger}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Danger}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="10,2"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DATAGRID — Clean, Minimal, Industrial
+         Implicit styles cascade to ALL DataGrids automatically
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Row: hover highlight, horizontal border -->
+    <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource RowHover}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource RowSelected}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Column header: slate tint, vertical dividers, centered -->
+    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+        <Setter Property="Background" Value="#F8FAFC"/>
+        <Setter Property="Foreground" Value="#334155"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,2"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Cell: vertical dividers, vertical center -->
+    <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
+        <Setter Property="BorderBrush" Value="{StaticResource BorderLight}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Padding" Value="12,0"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Named DataGrid style -->
+    <Style x:Key="StyledDataGrid" TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="RowHeight" Value="44"/>
+        <Setter Property="ColumnHeaderHeight" Value="44"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="White"/>
+    </Style>
+
+    <!-- Legacy key kept for backward compat -->
+    <Style x:Key="BlueColumnHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+        <Setter Property="Background" Value="#F8FAFC"/>
+        <Setter Property="Foreground" Value="#475569"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FORM CONTROLS — Outlined style, consistent sizing
+         ═══════════════════════════════════════════════════════════════ -->
+
     <Style x:Key="FilterTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
         <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.8"/>
         <Setter Property="materialDesign:HintAssist.IsFloating" Value="False"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="materialDesign:TextFieldAssist.UnderlineBrush" Value="{StaticResource Primary}"/>
     </Style>
 
     <Style x:Key="FilterComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
         <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.8"/>
         <Setter Property="materialDesign:HintAssist.IsFloating" Value="False"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Padding" Value="10,8"/>
     </Style>
 
     <Style x:Key="FilterDatePicker" TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
@@ -124,17 +279,17 @@
         <Setter Property="FontSize" Value="13"/>
     </Style>
 
-    <!-- Form field TextBox -->
     <Style x:Key="FormTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
         <Setter Property="materialDesign:HintAssist.IsFloating" Value="False"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Padding" Value="8,8"/>
+        <Setter Property="Padding" Value="10,10"/>
+        <Setter Property="materialDesign:TextFieldAssist.UnderlineBrush" Value="{StaticResource Primary}"/>
     </Style>
 
     <Style x:Key="FormComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
         <Setter Property="materialDesign:HintAssist.IsFloating" Value="False"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Padding" Value="8,8"/>
+        <Setter Property="Padding" Value="10,10"/>
     </Style>
 
     <Style x:Key="FormDatePicker" TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
@@ -142,30 +297,26 @@
         <Setter Property="FontSize" Value="13"/>
     </Style>
 
-    <!-- DataGrid với header xanh dương và zebra stripes -->
-    <Style x:Key="StyledDataGrid" TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
-        <Setter Property="AutoGenerateColumns" Value="False"/>
-        <Setter Property="IsReadOnly" Value="True"/>
-        <Setter Property="CanUserAddRows" Value="False"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="RowHeight" Value="40"/>
-        <Setter Property="ColumnHeaderHeight" Value="42"/>
-        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
-        <Setter Property="HorizontalGridLinesBrush" Value="#E0E0E0"/>
-        <Setter Property="BorderBrush" Value="#E0E0E0"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
-        <Setter Property="RowBackground" Value="White"/>
+    <!-- ═══════════════════════════════════════════════════════════════
+         STAT CARD — Dashboard KPI cards
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <Style x:Key="StatValue" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="32"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
     </Style>
 
-    <!-- Header style cho DataGrid - xanh dương -->
-    <Style x:Key="BlueColumnHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-        <Setter Property="Background" Value="#2196F3"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Padding" Value="12,8"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Style x:Key="StatLabel" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+        <Setter Property="FontWeight" Value="Medium"/>
     </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SCROLLBAR — Thin, minimal
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}"/>
 
 </ResourceDictionary>

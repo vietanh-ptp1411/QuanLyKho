@@ -22,6 +22,12 @@ public partial class NhapKhoViewModel : ObservableObject
     [ObservableProperty] private DateTime? _filterToDate;
     [ObservableProperty] private string _errorMessage = "";
 
+    private List<PhieuNhapKho> _allItems = new();
+    [ObservableProperty] private int _currentPage = 1;
+    [ObservableProperty] private int _totalPages = 1;
+    [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private int _pageSize = 20;
+
     // Form view
     [ObservableProperty] private bool _isEditing;
     [ObservableProperty] private bool _isNew;
@@ -72,8 +78,9 @@ public partial class NhapKhoViewModel : ObservableObject
             if (FilterToDate.HasValue)
                 query = query.Where(p => p.NgayNhap <= FilterToDate.Value.AddDays(1));
 
-            DanhSach = new ObservableCollection<PhieuNhapKho>(
-                await query.OrderByDescending(p => p.NgayNhap).ToListAsync());
+            _allItems = await query.OrderByDescending(p => p.NgayNhap).ToListAsync();
+            CurrentPage = 1;
+            ApplyPaging();
         }
         catch (Exception ex)
         {
@@ -82,6 +89,23 @@ public partial class NhapKhoViewModel : ObservableObject
     }
 
     partial void OnSearchTextChanged(string value) => LoadDataCommand.ExecuteAsync(null);
+
+    [RelayCommand]
+    private void NextPage() { if (CurrentPage < TotalPages) { CurrentPage++; ApplyPaging(); } }
+    [RelayCommand]
+    private void PrevPage() { if (CurrentPage > 1) { CurrentPage--; ApplyPaging(); } }
+    [RelayCommand]
+    private void FirstPage() { CurrentPage = 1; ApplyPaging(); }
+    [RelayCommand]
+    private void LastPage() { CurrentPage = TotalPages; ApplyPaging(); }
+
+    private void ApplyPaging()
+    {
+        var paged = _allItems.Skip((CurrentPage - 1) * PageSize).Take(PageSize);
+        DanhSach = new ObservableCollection<PhieuNhapKho>(paged);
+        TotalPages = Math.Max(1, (int)Math.Ceiling((double)_allItems.Count / PageSize));
+        TotalCount = _allItems.Count;
+    }
 
     [RelayCommand]
     private async Task AddNew()
@@ -274,6 +298,22 @@ public partial class NhapKhoViewModel : ObservableObject
         {
             ErrorMessage = $"Lỗi xóa phiếu: {ex.Message}";
         }
+    }
+
+    [RelayCommand]
+    private async Task EditPhieuItem(PhieuNhapKho? item)
+    {
+        if (item == null) return;
+        SelectedPhieu = item;
+        await EditPhieu();
+    }
+
+    [RelayCommand]
+    private async Task DeletePhieuItem(PhieuNhapKho? item)
+    {
+        if (item == null) return;
+        SelectedPhieu = item;
+        await DeletePhieu();
     }
 
     [RelayCommand]

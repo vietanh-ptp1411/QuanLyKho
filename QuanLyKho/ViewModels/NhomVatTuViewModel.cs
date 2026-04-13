@@ -19,6 +19,12 @@ public partial class NhomVatTuViewModel : ObservableObject
     [ObservableProperty] private bool _isNew;
     [ObservableProperty] private string _errorMessage = "";
 
+    private List<NhomVatTu> _allItems = new();
+    [ObservableProperty] private int _currentPage = 1;
+    [ObservableProperty] private int _totalPages = 1;
+    [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private int _pageSize = 20;
+
     public NhomVatTuViewModel(IDbContextFactory<AppDbContext> contextFactory)
     {
         _contextFactory = contextFactory;
@@ -33,12 +39,31 @@ public partial class NhomVatTuViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
             var items = await context.NhomVatTus.OrderBy(x => x.MaNhom).ToListAsync();
-            DanhSach = new ObservableCollection<NhomVatTu>(items);
+            _allItems = items;
+            CurrentPage = 1;
+            ApplyPaging();
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Lỗi tải dữ liệu: {ex.Message}";
         }
+    }
+
+    [RelayCommand]
+    private void NextPage() { if (CurrentPage < TotalPages) { CurrentPage++; ApplyPaging(); } }
+    [RelayCommand]
+    private void PrevPage() { if (CurrentPage > 1) { CurrentPage--; ApplyPaging(); } }
+    [RelayCommand]
+    private void FirstPage() { CurrentPage = 1; ApplyPaging(); }
+    [RelayCommand]
+    private void LastPage() { CurrentPage = TotalPages; ApplyPaging(); }
+
+    private void ApplyPaging()
+    {
+        var paged = _allItems.Skip((CurrentPage - 1) * PageSize).Take(PageSize);
+        DanhSach = new ObservableCollection<NhomVatTu>(paged);
+        TotalPages = Math.Max(1, (int)Math.Ceiling((double)_allItems.Count / PageSize));
+        TotalCount = _allItems.Count;
     }
 
     [RelayCommand]

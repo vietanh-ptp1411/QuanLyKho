@@ -4315,23 +4315,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\GenG_Hinna\\.nuget\\packages\\": {},
+    "C:\\Users\\Hina\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\QuanLyKho\\QuanLyKho\\QuanLyKho.csproj",
+      "projectUniqueName": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\QuanLyKho.csproj",
       "projectName": "QuanLyKho",
-      "projectPath": "D:\\QuanLyKho\\QuanLyKho\\QuanLyKho.csproj",
-      "packagesPath": "C:\\Users\\GenG_Hinna\\.nuget\\packages\\",
-      "outputPath": "D:\\QuanLyKho\\QuanLyKho\\obj\\",
+      "projectPath": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\QuanLyKho.csproj",
+      "packagesPath": "C:\\Users\\Hina\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\GenG_Hinna\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Hina\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -4358,7 +4358,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net9.0-windows7.0": {
@@ -4430,7 +4430,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

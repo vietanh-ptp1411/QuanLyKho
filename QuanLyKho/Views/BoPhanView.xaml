@@ -8,6 +8,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Tiêu đề màu đỏ căn giữa -->
@@ -48,12 +49,69 @@
         <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedItem}"
                   AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                   FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
-                  Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"
-                  Style="{StaticResource MaterialDesignDataGrid}">
+                                    Style="{StaticResource MaterialDesignDataGrid}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
                 <DataGridTextColumn Header="Tên bộ phận" Binding="{Binding TenBoPhan}" Width="*"/>
+                <DataGridTemplateColumn Header="Thao tác" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource BtnGridEdit}" Margin="0,0,4,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Pencil" Width="14" Height="14" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Sửa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource BtnGridDelete}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Delete" Width="14" Height="14" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Xóa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+
+        <!-- Phân trang -->
+        <Border Grid.Row="4" Background="White" BorderBrush="#E2E8F0" BorderThickness="1,0,1,1"
+                CornerRadius="0,0,8,8" Padding="12,8">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="13" Foreground="#64748B">
+                    <Run Text="Hiển thị "/>
+                    <Run Text="{Binding DanhSach.Count, Mode=OneWay}" FontWeight="SemiBold"/>
+                    <Run Text=" / "/>
+                    <Run Text="{Binding TotalCount, Mode=OneWay}" FontWeight="SemiBold"/>
+                    <Run Text=" mục"/>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Command="{Binding FirstPageCommand}" Content="⟨⟨" Padding="8,4" MinWidth="36" Height="32"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" FontSize="12" Margin="0,0,4,0"
+                            materialDesign:ButtonAssist.CornerRadius="6" BorderBrush="#CBD5E1"/>
+                    <Button Command="{Binding PrevPageCommand}" Content="⟨" Padding="8,4" MinWidth="36" Height="32"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" FontSize="12" Margin="0,0,8,0"
+                            materialDesign:ButtonAssist.CornerRadius="6" BorderBrush="#CBD5E1"/>
+                    <TextBlock VerticalAlignment="Center" FontSize="13" Margin="0,0,8,0">
+                        <Run Text="Trang "/>
+                        <Run Text="{Binding CurrentPage, Mode=OneWay}" FontWeight="Bold"/>
+                        <Run Text=" / "/>
+                        <Run Text="{Binding TotalPages, Mode=OneWay}" FontWeight="Bold"/>
+                    </TextBlock>
+                    <Button Command="{Binding NextPageCommand}" Content="⟩" Padding="8,4" MinWidth="36" Height="32"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" FontSize="12" Margin="0,0,4,0"
+                            materialDesign:ButtonAssist.CornerRadius="6" BorderBrush="#CBD5E1"/>
+                    <Button Command="{Binding LastPageCommand}" Content="⟩⟩" Padding="8,4" MinWidth="36" Height="32"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" FontSize="12"
+                            materialDesign:ButtonAssist.CornerRadius="6" BorderBrush="#CBD5E1"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
 </UserControl>

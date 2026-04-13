@@ -15,6 +15,12 @@ public partial class VatTuViewModel : ObservableObject
     [ObservableProperty] private VatTu? _selectedItem;
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private NhomVatTu? _filterNhom;
+
+    private List<VatTu> _allItems = new();
+    [ObservableProperty] private int _currentPage = 1;
+    [ObservableProperty] private int _totalPages = 1;
+    [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private int _pageSize = 20;
     [ObservableProperty] private ObservableCollection<NhomVatTu> _nhomVatTus = new();
     [ObservableProperty] private ObservableCollection<DonViTinh> _donViTinhs = new();
     [ObservableProperty] private string _errorMessage = "";
@@ -59,7 +65,9 @@ public partial class VatTuViewModel : ObservableObject
             }
 
             var items = await query.OrderBy(x => x.MaVatTu).ToListAsync();
-            DanhSach = new ObservableCollection<VatTu>(items);
+            _allItems = items;
+            CurrentPage = 1;
+            ApplyPaging();
         }
         catch (Exception ex)
         {
@@ -67,8 +75,25 @@ public partial class VatTuViewModel : ObservableObject
         }
     }
 
-    partial void OnSearchTextChanged(string value) => LoadDataCommand.ExecuteAsync(null);
-    partial void OnFilterNhomChanged(NhomVatTu? value) => LoadDataCommand.ExecuteAsync(null);
+    partial void OnSearchTextChanged(string value) { CurrentPage = 1; LoadDataCommand.ExecuteAsync(null); }
+    partial void OnFilterNhomChanged(NhomVatTu? value) { CurrentPage = 1; LoadDataCommand.ExecuteAsync(null); }
+
+    [RelayCommand]
+    private void NextPage() { if (CurrentPage < TotalPages) { CurrentPage++; ApplyPaging(); } }
+    [RelayCommand]
+    private void PrevPage() { if (CurrentPage > 1) { CurrentPage--; ApplyPaging(); } }
+    [RelayCommand]
+    private void FirstPage() { CurrentPage = 1; ApplyPaging(); }
+    [RelayCommand]
+    private void LastPage() { CurrentPage = TotalPages; ApplyPaging(); }
+
+    private void ApplyPaging()
+    {
+        var paged = _allItems.Skip((CurrentPage - 1) * PageSize).Take(PageSize);
+        DanhSach = new ObservableCollection<VatTu>(paged);
+        TotalPages = Math.Max(1, (int)Math.Ceiling((double)_allItems.Count / PageSize));
+        TotalCount = _allItems.Count;
+    }
 
     [RelayCommand]
     private void Add()

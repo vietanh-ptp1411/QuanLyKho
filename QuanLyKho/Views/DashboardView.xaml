@@ -5,94 +5,131 @@
              xmlns:System="clr-namespace:System;assembly=mscorlib">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
-            <TextBlock Text="Tổng quan" Style="{StaticResource PageTitle}"/>
+            <!-- Header -->
+            <DockPanel Margin="0,0,0,24">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="Tổng quan" FontSize="24" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"/>
+                    <TextBlock FontSize="13" Foreground="{StaticResource TextSecondary}" Margin="0,4,0,0">
+                        <TextBlock.Text>
+                            <Binding Source="{x:Static System:DateTime.Now}" StringFormat="{}Cập nhật: {0:dd/MM/yyyy HH:mm}"/>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
+            </DockPanel>
 
-            <!-- Row 1: 3 cards -->
-            <UniformGrid Columns="3" Margin="0,0,0,12">
-                <materialDesign:Card Padding="18" Margin="0,0,10,0">
-                    <StackPanel>
-                        <DockPanel>
-                            <Border Width="42" Height="42" CornerRadius="10" Background="#E3F2FD" DockPanel.Dock="Left">
-                                <materialDesign:PackIcon Kind="CubeOutline" Width="24" Height="24" Foreground="#1565C0"
-                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="Tổng số vật tư" FontSize="12" Foreground="Gray"/>
-                                <TextBlock Text="{Binding TongSoVatTu}" FontSize="28" FontWeight="Bold"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </StackPanel>
-                </materialDesign:Card>
+            <!-- KPI Row 1: 3 stat cards -->
+            <UniformGrid Columns="3" Margin="0,0,0,16">
 
-                <materialDesign:Card Padding="18" Margin="0,0,10,0">
+                <!-- Tong so vat tu -->
+                <Border Background="White" CornerRadius="12" Padding="24,20" Margin="0,0,12,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.06" Color="#000"/>
+                    </Border.Effect>
                     <DockPanel>
-                        <Border Width="42" Height="42" CornerRadius="10" Background="#FFF3E0" DockPanel.Dock="Left">
-                            <materialDesign:PackIcon Kind="Warehouse" Width="24" Height="24" Foreground="#E65100"
+                        <Border Width="48" Height="48" CornerRadius="12" Background="{StaticResource PrimaryLight}" DockPanel.Dock="Left">
+                            <materialDesign:PackIcon Kind="CubeOutline" Width="24" Height="24" Foreground="{StaticResource Primary}"
                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="Số kho" FontSize="12" Foreground="Gray"/>
-                            <TextBlock Text="{Binding TongSoKho}" FontSize="28" FontWeight="Bold"/>
+                        <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Tổng số vật tư" Style="{StaticResource StatLabel}"/>
+                            <TextBlock Text="{Binding TongSoVatTu}" Style="{StaticResource StatValue}" Margin="0,4,0,0"/>
                         </StackPanel>
                     </DockPanel>
-                </materialDesign:Card>
+                </Border>
 
-                <materialDesign:Card Padding="18">
+                <!-- So kho -->
+                <Border Background="White" CornerRadius="12" Padding="24,20" Margin="0,0,12,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.06" Color="#000"/>
+                    </Border.Effect>
                     <DockPanel>
-                        <Border Width="42" Height="42" CornerRadius="10" Background="#E8F5E9" DockPanel.Dock="Left">
-                            <materialDesign:PackIcon Kind="CalendarMonth" Width="24" Height="24" Foreground="#2E7D32"
+                        <Border Width="48" Height="48" CornerRadius="12" Background="{StaticResource WarningLight}" DockPanel.Dock="Left">
+                            <materialDesign:PackIcon Kind="Warehouse" Width="24" Height="24" Foreground="{StaticResource Warning}"
                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="Tháng hiện tại" FontSize="12" Foreground="Gray"/>
+                        <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Số kho" Style="{StaticResource StatLabel}"/>
+                            <TextBlock Text="{Binding TongSoKho}" Style="{StaticResource StatValue}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Thang hien tai -->
+                <Border Background="White" CornerRadius="12" Padding="24,20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.06" Color="#000"/>
+                    </Border.Effect>
+                    <DockPanel>
+                        <Border Width="48" Height="48" CornerRadius="12" Background="{StaticResource InfoLight}" DockPanel.Dock="Left">
+                            <materialDesign:PackIcon Kind="CalendarMonth" Width="24" Height="24" Foreground="{StaticResource Info}"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Tháng hiện tại" Style="{StaticResource StatLabel}"/>
                             <TextBlock Text="{Binding Source={x:Static System:DateTime.Now}, StringFormat='{}{0:MM/yyyy}'}"
-                                       FontSize="28" FontWeight="Bold"/>
+                                       Style="{StaticResource StatValue}" Margin="0,4,0,0"/>
                         </StackPanel>
                     </DockPanel>
-                </materialDesign:Card>
+                </Border>
             </UniformGrid>
 
-            <!-- Row 2: Nhập / Xuất tháng -->
-            <UniformGrid Columns="2">
-                <materialDesign:Card Padding="18" Margin="0,0,10,0">
-                    <DockPanel>
-                        <Border Width="42" Height="42" CornerRadius="10" Background="#E8F5E9" DockPanel.Dock="Left">
-                            <materialDesign:PackIcon Kind="PackageDown" Width="24" Height="24" Foreground="#2E7D32"
-                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="Nhập kho tháng này" FontSize="12" Foreground="Gray"/>
-                            <TextBlock FontSize="18" FontWeight="Bold" Margin="0,2,0,0">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0} phiếu  -  {1:N0} đ">
-                                        <Binding Path="SoPhieuNhapThang"/>
-                                        <Binding Path="TongGiaTriNhapThang"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </StackPanel>
-                    </DockPanel>
-                </materialDesign:Card>
+            <!-- KPI Row 2: Nhap / Xuat thang -->
+            <UniformGrid Columns="2" Margin="0,0,0,16">
 
-                <materialDesign:Card Padding="18">
+                <!-- Nhap kho thang nay -->
+                <Border Background="White" CornerRadius="12" Padding="24,20" Margin="0,0,12,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.06" Color="#000"/>
+                    </Border.Effect>
                     <DockPanel>
-                        <Border Width="42" Height="42" CornerRadius="10" Background="#FFEBEE" DockPanel.Dock="Left">
-                            <materialDesign:PackIcon Kind="PackageUp" Width="24" Height="24" Foreground="#C62828"
+                        <Border Width="48" Height="48" CornerRadius="12" Background="{StaticResource SuccessLight}" DockPanel.Dock="Left">
+                            <materialDesign:PackIcon Kind="PackageDown" Width="24" Height="24" Foreground="{StaticResource Success}"
                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="Xuất kho tháng này" FontSize="12" Foreground="Gray"/>
-                            <TextBlock FontSize="18" FontWeight="Bold" Margin="0,2,0,0">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0} phiếu  -  {1:N0} đ">
-                                        <Binding Path="SoPhieuXuatThang"/>
-                                        <Binding Path="TongGiaTriXuatThang"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
+                        <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Nhập kho tháng này" Style="{StaticResource StatLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <TextBlock Text="{Binding SoPhieuNhapThang}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource Success}"/>
+                                <TextBlock Text=" phiếu" FontSize="14" Foreground="{StaticResource TextSecondary}"
+                                           VerticalAlignment="Bottom" Margin="0,0,16,3"/>
+                                <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"
+                                           VerticalAlignment="Bottom" Margin="0,0,0,4">
+                                    <TextBlock.Text>
+                                        <Binding Path="TongGiaTriNhapThang" StringFormat="{}{0:N0} đ"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
                         </StackPanel>
                     </DockPanel>
-                </materialDesign:Card>
+                </Border>
+
+                <!-- Xuat kho thang nay -->
+                <Border Background="White" CornerRadius="12" Padding="24,20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.06" Color="#000"/>
+                    </Border.Effect>
+                    <DockPanel>
+                        <Border Width="48" Height="48" CornerRadius="12" Background="{StaticResource DangerLight}" DockPanel.Dock="Left">
+                            <materialDesign:PackIcon Kind="PackageUp" Width="24" Height="24" Foreground="{StaticResource Danger}"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Xuất kho tháng này" Style="{StaticResource StatLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <TextBlock Text="{Binding SoPhieuXuatThang}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource Danger}"/>
+                                <TextBlock Text=" phiếu" FontSize="14" Foreground="{StaticResource TextSecondary}"
+                                           VerticalAlignment="Bottom" Margin="0,0,16,3"/>
+                                <TextBlock FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"
+                                           VerticalAlignment="Bottom" Margin="0,0,0,4">
+                                    <TextBlock.Text>
+                                        <Binding Path="TongGiaTriXuatThang" StringFormat="{}{0:N0} đ"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
             </UniformGrid>
         </StackPanel>
     </ScrollViewer>

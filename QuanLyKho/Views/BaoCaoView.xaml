@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <DockPanel>
-        <TextBlock Text="Xuất hóa đơn / Báo cáo" Style="{StaticResource PageTitle}" DockPanel.Dock="Top"/>
+        <TextBlock Text="XUẤT HÓA ĐƠN / BÁO CÁO" Style="{StaticResource PageTitleRed}" DockPanel.Dock="Top"/>
 
         <TabControl SelectedIndex="{Binding SelectedTab}"
                     Style="{StaticResource MaterialDesignFilledTabControl}">
@@ -45,11 +45,13 @@
                         <Button Command="{Binding ExportTonKhoExcelCommand}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                                    <Setter Property="Background" Value="#1B5E20"/>
+                                    <Setter Property="Background" Value="#16A34A"/>
                                     <Setter Property="Foreground" Value="White"/>
                                     <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+                                    <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
                                     <Setter Property="Height" Value="38"/>
-                                    <Setter Property="Padding" Value="16,8"/>
+                                    <Setter Property="Padding" Value="16,0"/>
                                 </Style>
                             </Button.Style>
                             <StackPanel Orientation="Horizontal">
@@ -58,7 +60,7 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                    <TextBlock Text="{Binding StatusMessage}" Foreground="#2E7D32" FontWeight="SemiBold" FontSize="12"/>
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="#059669" FontWeight="SemiBold" FontSize="12"/>
                 </StackPanel>
             </TabItem>
 
@@ -99,7 +101,7 @@
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                        <TextBlock Text="{Binding StatusMessage}" Foreground="#2E7D32" FontWeight="SemiBold" FontSize="12" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="#059669" FontWeight="SemiBold" FontSize="12" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <!-- Bảng danh sách -->
@@ -162,7 +164,7 @@
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                        <TextBlock Text="{Binding StatusMessage}" Foreground="#2E7D32" FontWeight="SemiBold" FontSize="12" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="#059669" FontWeight="SemiBold" FontSize="12" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <DataGrid ItemsSource="{Binding PhieuXuats}"
@@ -224,7 +226,7 @@
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                        <TextBlock Text="{Binding StatusMessage}" Foreground="#2E7D32" FontWeight="SemiBold" FontSize="12" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="#059669" FontWeight="SemiBold" FontSize="12" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <DataGrid ItemsSource="{Binding DeNghis}"
