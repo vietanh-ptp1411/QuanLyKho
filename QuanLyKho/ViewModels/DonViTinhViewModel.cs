@@ -37,7 +37,7 @@ public partial class DonViTinhViewModel : ObservableObject
         {
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
-            var items = await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync();
+            var items = await context.DonViTinhs.OrderByDescending(x => x.Id).ToListAsync();
             _allItems = items;
             CurrentPage = 1;
             ApplyPaging();

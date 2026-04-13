@@ -38,7 +38,7 @@ public partial class NhomVatTuViewModel : ObservableObject
         {
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
-            var items = await context.NhomVatTus.OrderBy(x => x.MaNhom).ToListAsync();
+            var items = await context.NhomVatTus.OrderByDescending(x => x.Id).ToListAsync();
             _allItems = items;
             CurrentPage = 1;
             ApplyPaging();

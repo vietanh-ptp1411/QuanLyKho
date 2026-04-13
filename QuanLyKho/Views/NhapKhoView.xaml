@@ -48,6 +48,15 @@
                       FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
                       Style="{StaticResource MaterialDesignDataGrid}">
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="STT" Width="55"
+                                        Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},
+                                        Converter={StaticResource IndexConverter}}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
                     <DataGridTextColumn Header="Số phiếu" Binding="{Binding SoPhieu}" Width="180"/>
                     <DataGridTextColumn Header="Ngày nhập" Binding="{Binding NgayNhap, StringFormat=dd/MM/yyyy}" Width="110"/>
                     <DataGridTextColumn Header="Người giao hàng" Binding="{Binding NguoiGiaoHang}" Width="200"/>

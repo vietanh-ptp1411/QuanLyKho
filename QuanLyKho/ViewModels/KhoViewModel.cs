@@ -39,7 +39,7 @@ public partial class KhoViewModel : ObservableObject
         {
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
-            var items = await context.Khos.OrderBy(x => x.MaKho).ToListAsync();
+            var items = await context.Khos.OrderByDescending(x => x.Id).ToListAsync();
             _allItems = items;
             CurrentPage = 1;
             ApplyPaging();

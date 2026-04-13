@@ -59,6 +59,15 @@
                   FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
                                     Style="{StaticResource MaterialDesignDataGrid}">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="STT" Width="55"
+                                    Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},
+                                    Converter={StaticResource IndexConverter}}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Mã nhóm" Binding="{Binding MaNhom}" Width="180"/>
                 <DataGridTextColumn Header="Tên nhóm" Binding="{Binding TenNhom}" Width="*"/>
                 <DataGridTemplateColumn Header="Thao tác" Width="*">

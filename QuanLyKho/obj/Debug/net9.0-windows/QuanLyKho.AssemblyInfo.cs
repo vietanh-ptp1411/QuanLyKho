@@ -11,11 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("QuanLyKho")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Công ty CP Tập đoàn Sông Hồng Thủ Đô")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("Phần mềm quản lý kho vật tư")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c3d1806ae8ec55635e5e318e63699312884ec76")]
-[assembly: System.Reflection.AssemblyProductAttribute("QuanLyKho")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+046d28bf559afd18adb8948b707338c2b8f6cbf5")]
+[assembly: System.Reflection.AssemblyProductAttribute("Quản Lý Kho - Sông Hồng Thủ Đô")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuanLyKho")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]

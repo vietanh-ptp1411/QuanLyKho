@@ -56,8 +56,10 @@ public partial class TonKhoViewModel : ObservableObject
             IsLoading = true;
             using var context = await _contextFactory.CreateDbContextAsync();
 
-            Khos = new ObservableCollection<Kho>(await context.Khos.ToListAsync());
-            NhomVatTus = new ObservableCollection<NhomVatTu>(await context.NhomVatTus.ToListAsync());
+            if (Khos.Count == 0)
+                Khos = new ObservableCollection<Kho>(await context.Khos.ToListAsync());
+            if (NhomVatTus.Count == 0)
+                NhomVatTus = new ObservableCollection<NhomVatTu>(await context.NhomVatTus.ToListAsync());
 
             // Tính ngày đầu kỳ và cuối kỳ
             var dauKy = new DateTime(SelectedYear, SelectedMonth, 1);

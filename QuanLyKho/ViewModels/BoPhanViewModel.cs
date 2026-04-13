@@ -37,7 +37,7 @@ public partial class BoPhanViewModel : ObservableObject
         {
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
-            var items = await context.BoPhans.OrderBy(x => x.TenBoPhan).ToListAsync();
+            var items = await context.BoPhans.OrderByDescending(x => x.Id).ToListAsync();
             _allItems = items;
             CurrentPage = 1;
             ApplyPaging();

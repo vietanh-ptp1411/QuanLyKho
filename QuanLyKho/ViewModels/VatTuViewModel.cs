@@ -48,8 +48,10 @@ public partial class VatTuViewModel : ObservableObject
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
 
-            NhomVatTus = new ObservableCollection<NhomVatTu>(await context.NhomVatTus.OrderBy(x => x.TenNhom).ToListAsync());
-            DonViTinhs = new ObservableCollection<DonViTinh>(await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync());
+            if (NhomVatTus.Count == 0)
+                NhomVatTus = new ObservableCollection<NhomVatTu>(await context.NhomVatTus.OrderBy(x => x.TenNhom).ToListAsync());
+            if (DonViTinhs.Count == 0)
+                DonViTinhs = new ObservableCollection<DonViTinh>(await context.DonViTinhs.OrderBy(x => x.TenDonVi).ToListAsync());
 
             var query = context.VatTus.Include(x => x.NhomVatTu).Include(x => x.DonViTinh).AsQueryable();
 
@@ -64,7 +66,7 @@ public partial class VatTuViewModel : ObservableObject
                 query = query.Where(x => x.NhomVatTuId == FilterNhom.Id);
             }
 
-            var items = await query.OrderBy(x => x.MaVatTu).ToListAsync();
+            var items = await query.OrderByDescending(x => x.Id).ToListAsync();
             _allItems = items;
             CurrentPage = 1;
             ApplyPaging();

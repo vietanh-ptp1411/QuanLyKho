@@ -1,3 +1,6 @@
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -69,6 +72,9 @@ public partial class App : Application
             using var context = contextFactory.CreateDbContext();
             context.Database.EnsureCreated();
 
+            // Tạo shortcut Desktop lần đầu
+            CreateDesktopShortcut();
+
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             mainWindow.DataContext = _serviceProvider.GetRequiredService<MainViewModel>();
             mainWindow.Show();
@@ -77,6 +83,35 @@ public partial class App : Application
         {
             MessageBox.Show($"Lỗi khởi động ứng dụng:\n{ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
+        }
+    }
+
+    private static void CreateDesktopShortcut()
+    {
+        try
+        {
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            var shortcutPath = Path.Combine(desktopPath, "Quản Lý Kho.lnk");
+            if (File.Exists(shortcutPath)) return; // Đã có rồi thì bỏ qua
+
+            var exePath = Environment.ProcessPath ?? "";
+            if (string.IsNullOrEmpty(exePath)) return;
+
+            // Dùng COM để tạo shortcut
+            var shellType = Type.GetTypeFromProgID("WScript.Shell");
+            if (shellType == null) return;
+            dynamic shell = Activator.CreateInstance(shellType)!;
+            dynamic shortcut = shell.CreateShortcut(shortcutPath);
+            shortcut.TargetPath = exePath;
+            shortcut.WorkingDirectory = Path.GetDirectoryName(exePath);
+            shortcut.Description = "Quản Lý Kho - Sông Hồng Thủ Đô";
+            shortcut.Save();
+            Marshal.ReleaseComObject(shortcut);
+            Marshal.ReleaseComObject(shell);
+        }
+        catch
+        {
+            // Bỏ qua nếu không tạo được shortcut
         }
     }
 }
