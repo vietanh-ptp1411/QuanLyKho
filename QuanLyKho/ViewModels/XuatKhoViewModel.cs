@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKho.Data;
+using QuanLyKho.Helpers;
 using QuanLyKho.Models;
 using QuanLyKho.Services;
 
@@ -24,7 +25,7 @@ public partial class XuatKhoViewModel : ObservableObject
     [ObservableProperty] private int _currentPage = 1;
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private int _totalCount;
-    [ObservableProperty] private int _pageSize = 20;
+    [ObservableProperty] private int _pageSize = 15;
 
     // Form
     [ObservableProperty] private bool _isEditing;
@@ -213,22 +214,48 @@ public partial class XuatKhoViewModel : ObservableObject
 
     public void RecalcTongTien() => TongTien = ChiTietRows.Sum(r => r.ThanhTien);
 
+    private bool _isSaving;
+
     [RelayCommand]
     private async Task Save()
     {
-        if (EditKho == null || string.IsNullOrWhiteSpace(EditSoPhieu))
+        if (_isSaving) return;
+
+        // ── Validation ──────────────────────────────────────────────────────────
+        if (EditKho == null)
         {
-            ErrorMessage = "Vui lòng chọn kho và điền số phiếu.";
+            ErrorMessage = "Vui lòng chọn kho xuất.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(EditSoPhieu))
+        {
+            ErrorMessage = "Vui lòng điền số phiếu.";
             return;
         }
 
+        var validRows = ChiTietRows.Where(r => r.VatTu != null).ToList();
+        if (validRows.Count == 0)
+        {
+            ErrorMessage = "Vui lòng thêm ít nhất một vật tư vào phiếu.";
+            return;
+        }
+
+        var rowSLZero = validRows.FirstOrDefault(r => r.SoLuong <= 0);
+        if (rowSLZero != null)
+        {
+            ErrorMessage = $"Số lượng của \"{rowSLZero.VatTu!.TenVatTu}\" phải lớn hơn 0.";
+            return;
+        }
+        // ────────────────────────────────────────────────────────────────────────
+
+        _isSaving = true;
         try
         {
             ErrorMessage = "";
             using var context = await _contextFactory.CreateDbContextAsync();
 
-            // Validate stock
-            foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+            // Kiểm tra tồn kho trước khi xuất
+            foreach (var row in validRows)
             {
                 var nhap = await context.ChiTietPhieuNhaps
                     .Where(ct => ct.VatTuId == row.VatTu!.Id && ct.PhieuNhapKho.KhoId == EditKho.Id)
@@ -268,27 +295,27 @@ public partial class XuatKhoViewModel : ObservableObject
                 phieu.ChiTietPhieuXuats.Clear();
             }
 
-            phieu.SoPhieu = EditSoPhieu;
-            phieu.NgayXuat = EditNgayXuat;
-            phieu.NguoiNhan = EditNguoiNhan;
-            phieu.KhoId = EditKho.Id;
-            phieu.BoPhanId = EditBoPhan?.Id;
-            phieu.NoiNhan = EditNoiNhan;
-            phieu.MucDichSuDung = EditMucDichSuDung;
-            phieu.NguoiLapPhieu = EditNguoiLapPhieu;
-            phieu.ThuKho = EditThuKho;
-            phieu.KeToanTruong = EditKeToanTruong;
-            phieu.GiamDoc = EditGiamDoc;
-            phieu.GhiChu = EditGhiChu;
-            phieu.TongTien = TongTien;
+            phieu.SoPhieu        = EditSoPhieu.Trim();
+            phieu.NgayXuat       = EditNgayXuat;
+            phieu.NguoiNhan      = EditNguoiNhan.Trim();
+            phieu.KhoId          = EditKho.Id;
+            phieu.BoPhanId       = EditBoPhan?.Id;
+            phieu.NoiNhan        = EditNoiNhan.Trim();
+            phieu.MucDichSuDung  = EditMucDichSuDung.Trim();
+            phieu.NguoiLapPhieu  = EditNguoiLapPhieu.Trim();
+            phieu.ThuKho         = EditThuKho.Trim();
+            phieu.KeToanTruong   = EditKeToanTruong.Trim();
+            phieu.GiamDoc        = EditGiamDoc.Trim();
+            phieu.GhiChu         = EditGhiChu.Trim();
+            phieu.TongTien       = TongTien;
 
-            foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+            foreach (var row in validRows)
             {
                 phieu.ChiTietPhieuXuats.Add(new ChiTietPhieuXuat
                 {
-                    VatTuId = row.VatTu!.Id,
-                    SoLuong = row.SoLuong,
-                    DonGia = row.DonGia,
+                    VatTuId   = row.VatTu!.Id,
+                    SoLuong   = row.SoLuong,
+                    DonGia    = row.DonGia,
                     ThanhTien = row.ThanhTien
                 });
             }
@@ -297,9 +324,17 @@ public partial class XuatKhoViewModel : ObservableObject
             IsEditing = false;
             await LoadData();
         }
+        catch (DbUpdateException dbEx)
+        {
+            ErrorMessage = DbExceptionHelper.GetMessage(dbEx);
+        }
         catch (Exception ex)
         {
             ErrorMessage = $"Lỗi lưu phiếu: {ex.Message}";
+        }
+        finally
+        {
+            _isSaving = false;
         }
     }
 
@@ -314,6 +349,12 @@ public partial class XuatKhoViewModel : ObservableObject
     private async Task DeletePhieu()
     {
         if (SelectedPhieu == null) return;
+        var confirm = System.Windows.MessageBox.Show(
+            $"Bạn có chắc muốn xóa phiếu xuất \"{SelectedPhieu.SoPhieu}\" không?\nThao tác này không thể hoàn tác.",
+            "Xác nhận xóa",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        if (confirm != System.Windows.MessageBoxResult.Yes) return;
         try
         {
             ErrorMessage = "";
@@ -325,6 +366,10 @@ public partial class XuatKhoViewModel : ObservableObject
                 await context.SaveChangesAsync();
             }
             await LoadData();
+        }
+        catch (DbUpdateException dbEx)
+        {
+            ErrorMessage = DbExceptionHelper.GetMessage(dbEx);
         }
         catch (Exception ex)
         {
@@ -352,11 +397,40 @@ public partial class XuatKhoViewModel : ObservableObject
     private void Filter() => LoadDataCommand.ExecuteAsync(null);
 
     [RelayCommand]
+    private async Task Print()
+    {
+        if (SelectedPhieu == null) return;
+
+        try
+        {
+            ErrorMessage = "";
+            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"PhieuXuat_{SelectedPhieu.SoPhieu}_{DateTime.Now:HHmmss}.pdf");
+
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieu = await context.PhieuXuatKhos
+                .Include(p => p.Kho).Include(p => p.BoPhan)
+                .Include(p => p.ChiTietPhieuXuats).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
+            if (phieu == null) return;
+
+            await _pdfService.ExportPhieuXuatKho(phieu, tempPath);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = tempPath,
+                Verb = "open",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi in phiếu: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
     private async Task ExportPdf()
     {
-        if (SelectedPhieu == null && !IsEditing) return;
-        var id = IsEditing && !IsNew ? SelectedPhieu!.Id : SelectedPhieu?.Id;
-        if (id == null) return;
+        if (SelectedPhieu == null) return;
 
         try
         {
@@ -364,7 +438,7 @@ public partial class XuatKhoViewModel : ObservableObject
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "PDF (*.pdf)|*.pdf",
-                FileName = $"PhieuXuatKho_{EditSoPhieu}.pdf"
+                FileName = $"PhieuXuatKho_{SelectedPhieu.SoPhieu}.pdf"
             };
             if (dialog.ShowDialog() != true) return;
 
@@ -372,7 +446,7 @@ public partial class XuatKhoViewModel : ObservableObject
             var phieu = await context.PhieuXuatKhos
                 .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuXuats).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
             if (phieu != null) await _pdfService.ExportPhieuXuatKho(phieu, dialog.FileName);
         }
         catch (Exception ex)
@@ -384,9 +458,7 @@ public partial class XuatKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task ExportExcel()
     {
-        if (SelectedPhieu == null && !IsEditing) return;
-        var id = IsEditing && !IsNew ? SelectedPhieu!.Id : SelectedPhieu?.Id;
-        if (id == null) return;
+        if (SelectedPhieu == null) return;
 
         try
         {
@@ -394,7 +466,7 @@ public partial class XuatKhoViewModel : ObservableObject
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "Excel (*.xlsx)|*.xlsx",
-                FileName = $"PhieuXuatKho_{EditSoPhieu}.xlsx"
+                FileName = $"PhieuXuatKho_{SelectedPhieu.SoPhieu}.xlsx"
             };
             if (dialog.ShowDialog() != true) return;
 
@@ -402,7 +474,7 @@ public partial class XuatKhoViewModel : ObservableObject
             var phieu = await context.PhieuXuatKhos
                 .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuXuats).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
             if (phieu != null) await _excelService.ExportPhieuXuatKho(phieu, dialog.FileName);
         }
         catch (Exception ex)

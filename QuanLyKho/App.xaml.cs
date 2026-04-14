@@ -53,7 +53,6 @@ public partial class App : Application
         services.AddTransient<XuatKhoViewModel>();
         services.AddTransient<DeNghiCapVatTuViewModel>();
         services.AddTransient<TonKhoViewModel>();
-        services.AddTransient<BaoCaoViewModel>();
 
         // MainWindow
         services.AddSingleton<MainWindow>();

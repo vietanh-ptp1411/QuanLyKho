@@ -62,19 +62,19 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Tên đơn vị tính" Binding="{Binding TenDonVi}" Width="*"/>
-                <DataGridTemplateColumn Header="Thao tác" Width="*">
+                <DataGridTemplateColumn Header="Thao tác" Width="165">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            <DockPanel VerticalAlignment="Center" LastChildFill="False" Margin="8,0">
+                                <Button DockPanel.Dock="Left" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
-                                        Style="{StaticResource BtnGridEdit}" Margin="0,0,4,0">
+                                        Style="{StaticResource BtnGridEdit}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Pencil" Width="14" Height="14" VerticalAlignment="Center"/>
                                         <TextBlock Text="Sửa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
-                                <Button Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                <Button DockPanel.Dock="Right" Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
                                         Style="{StaticResource BtnGridDelete}">
                                     <StackPanel Orientation="Horizontal">
@@ -82,7 +82,7 @@
                                         <TextBlock Text="Xóa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
-                            </StackPanel>
+                            </DockPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

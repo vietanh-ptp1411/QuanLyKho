@@ -3,13 +3,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKho.Data;
+using QuanLyKho.Helpers;
 using QuanLyKho.Models;
+using QuanLyKho.Services;
 
 namespace QuanLyKho.ViewModels;
 
 public partial class DeNghiCapVatTuViewModel : ObservableObject
 {
     private readonly IDbContextFactory<AppDbContext> _contextFactory;
+    private readonly IPdfExportService _pdfService;
 
     [ObservableProperty] private ObservableCollection<DeNghiCapVatTu> _danhSach = new();
     [ObservableProperty] private DeNghiCapVatTu? _selectedPhieu;
@@ -20,7 +23,7 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [ObservableProperty] private int _currentPage = 1;
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private int _totalCount;
-    [ObservableProperty] private int _pageSize = 20;
+    [ObservableProperty] private int _pageSize = 15;
 
     // Form
     [ObservableProperty] private bool _isEditing;
@@ -39,9 +42,10 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
 
     public string[] TrangThaiLabels { get; } = { "Nháp", "Đã duyệt", "Đã cấp", "Từ chối" };
 
-    public DeNghiCapVatTuViewModel(IDbContextFactory<AppDbContext> contextFactory)
+    public DeNghiCapVatTuViewModel(IDbContextFactory<AppDbContext> contextFactory, IPdfExportService pdfService)
     {
         _contextFactory = contextFactory;
+        _pdfService = pdfService;
         LoadDataCommand.ExecuteAsync(null);
     }
 
@@ -168,15 +172,41 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [RelayCommand]
     private void RemoveRow(ChiTietDeNghiRow row) => ChiTietRows.Remove(row);
 
+    private bool _isSaving;
+
     [RelayCommand]
     private async Task Save()
     {
+        if (_isSaving) return;
+
+        // ── Validation ──────────────────────────────────────────────────────────
         if (string.IsNullOrWhiteSpace(EditSoPhieu))
         {
             ErrorMessage = "Vui lòng điền số phiếu.";
             return;
         }
+        if (string.IsNullOrWhiteSpace(EditNguoiDeNghi))
+        {
+            ErrorMessage = "Vui lòng điền người đề nghị.";
+            return;
+        }
 
+        var validRows = ChiTietRows.Where(r => r.VatTu != null).ToList();
+        if (validRows.Count == 0)
+        {
+            ErrorMessage = "Vui lòng thêm ít nhất một vật tư vào đề nghị.";
+            return;
+        }
+
+        var rowSLZero = validRows.FirstOrDefault(r => r.SoLuongYeuCau <= 0);
+        if (rowSLZero != null)
+        {
+            ErrorMessage = $"Số lượng yêu cầu của \"{rowSLZero.VatTu!.TenVatTu}\" phải lớn hơn 0.";
+            return;
+        }
+        // ────────────────────────────────────────────────────────────────────────
+
+        _isSaving = true;
         try
         {
             ErrorMessage = "";
@@ -196,22 +226,22 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
                 phieu.ChiTietDeNghis.Clear();
             }
 
-            phieu.SoPhieu = EditSoPhieu;
-            phieu.NgayDeNghi = EditNgayDeNghi;
-            phieu.NguoiDeNghi = EditNguoiDeNghi;
-            phieu.BoPhanId = EditBoPhan?.Id;
-            phieu.ChucVu = EditChucVu;
-            phieu.TrangThai = EditTrangThai;
-            phieu.GhiChu = EditGhiChu;
+            phieu.SoPhieu      = EditSoPhieu.Trim();
+            phieu.NgayDeNghi   = EditNgayDeNghi;
+            phieu.NguoiDeNghi  = EditNguoiDeNghi.Trim();
+            phieu.BoPhanId     = EditBoPhan?.Id;
+            phieu.ChucVu       = EditChucVu.Trim();
+            phieu.TrangThai    = EditTrangThai;
+            phieu.GhiChu       = EditGhiChu.Trim();
 
-            foreach (var row in ChiTietRows.Where(r => r.VatTu != null))
+            foreach (var row in validRows)
             {
                 phieu.ChiTietDeNghis.Add(new ChiTietDeNghi
                 {
-                    VatTuId = row.VatTu!.Id,
-                    SoLuongYeuCau = row.SoLuongYeuCau,
-                    SoLuongDaCap = row.SoLuongDaCap,
-                    GhiChu = row.GhiChu
+                    VatTuId        = row.VatTu!.Id,
+                    SoLuongYeuCau  = row.SoLuongYeuCau,
+                    SoLuongDaCap   = row.SoLuongDaCap,
+                    GhiChu         = row.GhiChu
                 });
             }
 
@@ -219,9 +249,17 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
             IsEditing = false;
             await LoadData();
         }
+        catch (DbUpdateException dbEx)
+        {
+            ErrorMessage = DbExceptionHelper.GetMessage(dbEx);
+        }
         catch (Exception ex)
         {
             ErrorMessage = $"Lỗi lưu phiếu: {ex.Message}";
+        }
+        finally
+        {
+            _isSaving = false;
         }
     }
 
@@ -233,9 +271,46 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task Print()
+    {
+        if (SelectedPhieu == null) return;
+
+        try
+        {
+            ErrorMessage = "";
+            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"DeNghi_{SelectedPhieu.SoPhieu}_{DateTime.Now:HHmmss}.pdf");
+
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieu = await context.DeNghiCapVatTus
+                .Include(p => p.BoPhan)
+                .Include(p => p.ChiTietDeNghis).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
+            if (phieu == null) return;
+
+            await _pdfService.ExportDeNghiCapVatTu(phieu, tempPath);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = tempPath,
+                Verb = "open",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi in phiếu: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
     private async Task DeletePhieu()
     {
         if (SelectedPhieu == null) return;
+        var confirm = System.Windows.MessageBox.Show(
+            $"Bạn có chắc muốn xóa đề nghị \"{SelectedPhieu.SoPhieu}\" không?\nThao tác này không thể hoàn tác.",
+            "Xác nhận xóa",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        if (confirm != System.Windows.MessageBoxResult.Yes) return;
         try
         {
             ErrorMessage = "";

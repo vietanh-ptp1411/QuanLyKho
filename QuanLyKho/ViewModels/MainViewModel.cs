@@ -34,8 +34,6 @@ public partial class MainViewModel : ObservableObject
         MenuItems.Add(new MenuItem { Title = "Xuất kho", Icon = PackIconKind.PackageUp, ViewModelType = typeof(XuatKhoViewModel) });
         MenuItems.Add(new MenuItem { Title = "Đề nghị cấp VT", Icon = PackIconKind.FileDocumentOutline, ViewModelType = typeof(DeNghiCapVatTuViewModel) });
         MenuItems.Add(new MenuItem { Title = "Tồn kho", Icon = PackIconKind.ChartBox, ViewModelType = typeof(TonKhoViewModel) });
-        MenuItems.Add(new MenuItem { Title = "Báo cáo", Icon = PackIconKind.FilePdfBox, ViewModelType = typeof(BaoCaoViewModel) });
-
         // Navigate to dashboard by default
         SelectedMenuItem = MenuItems[0];
     }

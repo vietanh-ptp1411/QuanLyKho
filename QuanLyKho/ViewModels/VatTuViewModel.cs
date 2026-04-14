@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKho.Data;
+using QuanLyKho.Helpers;
 using QuanLyKho.Models;
 
 namespace QuanLyKho.ViewModels;
@@ -20,7 +21,7 @@ public partial class VatTuViewModel : ObservableObject
     [ObservableProperty] private int _currentPage = 1;
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private int _totalCount;
-    [ObservableProperty] private int _pageSize = 20;
+    [ObservableProperty] private int _pageSize = 15;
     [ObservableProperty] private ObservableCollection<NhomVatTu> _nhomVatTus = new();
     [ObservableProperty] private ObservableCollection<DonViTinh> _donViTinhs = new();
     [ObservableProperty] private string _errorMessage = "";
@@ -179,6 +180,10 @@ public partial class VatTuViewModel : ObservableObject
             IsEditing = false;
             await LoadData();
         }
+        catch (DbUpdateException dbEx)
+        {
+            ErrorMessage = DbExceptionHelper.GetMessage(dbEx);
+        }
         catch (Exception ex)
         {
             ErrorMessage = $"Lỗi lưu dữ liệu: {ex.Message}";
@@ -192,6 +197,12 @@ public partial class VatTuViewModel : ObservableObject
     private async Task Delete()
     {
         if (SelectedItem == null) return;
+        var confirm = System.Windows.MessageBox.Show(
+            $"Bạn có chắc muốn xóa vật tư \"{SelectedItem.TenVatTu}\" không?\nThao tác này không thể hoàn tác.",
+            "Xác nhận xóa",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        if (confirm != System.Windows.MessageBoxResult.Yes) return;
         try
         {
             ErrorMessage = "";
@@ -214,6 +225,12 @@ public partial class VatTuViewModel : ObservableObject
     private async Task DeleteItem(VatTu? item)
     {
         if (item == null) return;
+        var confirm = System.Windows.MessageBox.Show(
+            $"Bạn có chắc muốn xóa vật tư \"{item.TenVatTu}\" không?\nThao tác này không thể hoàn tác.",
+            "Xác nhận xóa",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        if (confirm != System.Windows.MessageBoxResult.Yes) return;
         try
         {
             ErrorMessage = "";

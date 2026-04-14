@@ -34,14 +34,33 @@
                 </Button>
             </WrapPanel>
 
-            <!-- Nút tạo phiếu -->
-            <Button Grid.Row="2" Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}"
-                    HorizontalAlignment="Left" Margin="0,0,0,12">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <TextBlock Text="Tạo phiếu xuất"/>
-                </StackPanel>
-            </Button>
+            <!-- Nút hành động -->
+            <WrapPanel Grid.Row="2" Margin="0,0,0,12">
+                <Button Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Tạo phiếu xuất"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="In"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FilePdfBox" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xuất PDF"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource BtnExcel}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="MicrosoftExcel" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xuất Excel"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
 
             <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedPhieu}"
                       AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
@@ -59,7 +78,7 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Số phiếu" Binding="{Binding SoPhieu}" Width="180"/>
                     <DataGridTextColumn Header="Ngày xuất" Binding="{Binding NgayXuat, StringFormat=dd/MM/yyyy}" Width="110"/>
-                    <DataGridTextColumn Header="Người nhận" Binding="{Binding NguoiNhan}" Width="180"/>
+                    <DataGridTextColumn Header="Người nhận" Binding="{Binding NguoiNhan}" Width="*"/>
                     <DataGridTextColumn Header="Kho" Binding="{Binding Kho.TenKho}" Width="130"/>
                     <DataGridTextColumn Header="Bộ phận" Binding="{Binding BoPhan.TenBoPhan}" Width="130"/>
                     <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TongTien, StringFormat=N0}" Width="130">
@@ -67,19 +86,19 @@
                             <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTemplateColumn Header="Thao tác" Width="*">
+                    <DataGridTemplateColumn Header="Thao tác" Width="165">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Command="{Binding DataContext.EditPhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                <DockPanel VerticalAlignment="Center" LastChildFill="False" Margin="8,0">
+                                    <Button DockPanel.Dock="Left" Command="{Binding DataContext.EditPhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
-                                            Style="{StaticResource BtnGridEdit}" Margin="0,0,4,0">
+                                            Style="{StaticResource BtnGridEdit}">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Pencil" Width="14" Height="14" VerticalAlignment="Center"/>
                                             <TextBlock Text="Sửa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding DataContext.DeletePhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    <Button DockPanel.Dock="Right" Command="{Binding DataContext.DeletePhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
                                             Style="{StaticResource BtnGridDelete}">
                                         <StackPanel Orientation="Horizontal">
@@ -87,7 +106,7 @@
                                             <TextBlock Text="Xóa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                </StackPanel>
+                                </DockPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -136,6 +155,13 @@
                 <DockPanel Margin="0,0,0,10">
                     <TextBlock Text="Phiếu xuất kho" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0"
+                                Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="In"/>
+                            </StackPanel>
+                        </Button>
                         <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0"
                                 Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
                             <StackPanel Orientation="Horizontal">

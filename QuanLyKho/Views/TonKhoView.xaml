@@ -7,8 +7,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -49,8 +50,24 @@
             </StackPanel>
         </WrapPanel>
 
+        <!-- Nút hành động -->
+        <WrapPanel Grid.Row="2" Margin="0,0,0,12">
+            <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="In"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="FilePdfBox" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="Xuất PDF"/>
+                </StackPanel>
+            </Button>
+        </WrapPanel>
+
         <!-- Thông tin kỳ -->
-        <Border Grid.Row="2" Background="#EFF6FF" CornerRadius="8" Padding="16,8" Margin="0,0,0,12">
+        <Border Grid.Row="3" Background="#EFF6FF" CornerRadius="8" Padding="16,8" Margin="0,0,0,12">
             <TextBlock FontSize="13" Foreground="#1E293B">
                 <Run Text="Kỳ báo cáo: " FontWeight="SemiBold"/>
                 <Run Text="Tháng "/>
@@ -64,8 +81,37 @@
             </TextBlock>
         </Border>
 
+        <!-- Dòng tổng cộng (trên bảng) -->
+        <Border Grid.Row="4" Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1,1,1,0"
+                Padding="0">
+            <Grid Height="42">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="105"/>
+                    <ColumnDefinition Width="115"/>
+                    <ColumnDefinition Width="115"/>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="4" Text="TỔNG CỘNG" FontWeight="Bold" FontSize="13"
+                           Foreground="#1E40AF" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
+                <TextBlock Grid.Column="4" Text="{Binding TongTonDau, StringFormat=N2}" FontWeight="Bold" FontSize="13"
+                           Foreground="#1E40AF" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
+                <TextBlock Grid.Column="5" Text="{Binding TongNhap, StringFormat=N2}" FontWeight="Bold" FontSize="13"
+                           Foreground="#059669" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
+                <TextBlock Grid.Column="6" Text="{Binding TongXuat, StringFormat=N2}" FontWeight="Bold" FontSize="13"
+                           Foreground="#DC2626" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
+                <TextBlock Grid.Column="7" Text="{Binding TongTonCuoi, StringFormat=N2}" FontWeight="Bold" FontSize="14"
+                           Foreground="#1D4ED8" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
+            </Grid>
+        </Border>
+
         <!-- Bảng dữ liệu -->
-        <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}"
+        <DataGrid Grid.Row="5" ItemsSource="{Binding DanhSach}"
                   AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                   FontSize="13" RowHeight="40" ColumnHeaderHeight="44"
                   Style="{StaticResource MaterialDesignDataGrid}">
@@ -129,7 +175,7 @@
         </DataGrid>
 
         <!-- Phân trang -->
-        <Border Grid.Row="4" Background="White" BorderBrush="#E2E8F0" BorderThickness="1,0,1,1"
+        <Border Grid.Row="6" Background="White" BorderBrush="#E2E8F0" BorderThickness="1,0,1,1"
                 Padding="12,8">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="13" Foreground="#64748B">
@@ -162,33 +208,5 @@
             </DockPanel>
         </Border>
 
-        <!-- Dòng tổng cộng -->
-        <Border Grid.Row="5" Background="White" BorderBrush="#E2E8F0" BorderThickness="1,0,1,1"
-                Padding="0">
-            <Grid Height="44">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="55"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="70"/>
-                    <ColumnDefinition Width="105"/>
-                    <ColumnDefinition Width="115"/>
-                    <ColumnDefinition Width="115"/>
-                    <ColumnDefinition Width="110"/>
-                    <ColumnDefinition Width="120"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" Grid.ColumnSpan="4" Text="TỔNG CỘNG" FontWeight="Bold" FontSize="13"
-                           VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
-                <TextBlock Grid.Column="4" Text="{Binding TongTonDau, StringFormat=N2}" FontWeight="Bold" FontSize="13"
-                           VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
-                <TextBlock Grid.Column="5" Text="{Binding TongNhap, StringFormat=N2}" FontWeight="Bold" FontSize="13"
-                           Foreground="#059669" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
-                <TextBlock Grid.Column="6" Text="{Binding TongXuat, StringFormat=N2}" FontWeight="Bold" FontSize="13"
-                           Foreground="#DC2626" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
-                <TextBlock Grid.Column="7" Text="{Binding TongTonCuoi, StringFormat=N2}" FontWeight="Bold" FontSize="14"
-                           Foreground="#1D4ED8" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0"/>
-            </Grid>
-        </Border>
     </Grid>
 </UserControl>

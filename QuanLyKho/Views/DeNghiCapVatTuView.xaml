@@ -15,13 +15,21 @@
 
             <TextBlock Text="ĐỀ NGHỊ CẤP VẬT TƯ" Style="{StaticResource PageTitleRed}"/>
 
-            <Button Grid.Row="1" Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}"
-                    HorizontalAlignment="Left" Margin="0,0,0,12">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <TextBlock Text="Tạo đề nghị"/>
-                </StackPanel>
-            </Button>
+            <!-- Nút hành động -->
+            <WrapPanel Grid.Row="1" Margin="0,0,0,12">
+                <Button Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Tạo đề nghị"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="In"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
 
             <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedPhieu}"
                       AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
@@ -39,22 +47,22 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Số phiếu" Binding="{Binding SoPhieu}" Width="180"/>
                     <DataGridTextColumn Header="Ngày" Binding="{Binding NgayDeNghi, StringFormat=dd/MM/yyyy}" Width="110"/>
-                    <DataGridTextColumn Header="Người đề nghị" Binding="{Binding NguoiDeNghi}" Width="180"/>
+                    <DataGridTextColumn Header="Người đề nghị" Binding="{Binding NguoiDeNghi}" Width="*"/>
                     <DataGridTextColumn Header="Bộ phận" Binding="{Binding BoPhan.TenBoPhan}" Width="150"/>
                     <DataGridTextColumn Header="Trạng thái" Binding="{Binding TrangThai, Converter={StaticResource TrangThaiFormat}}" Width="120"/>
-                    <DataGridTemplateColumn Header="Thao tác" Width="*">
+                    <DataGridTemplateColumn Header="Thao tác" Width="165">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Command="{Binding DataContext.EditPhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                <DockPanel VerticalAlignment="Center" LastChildFill="False" Margin="8,0">
+                                    <Button DockPanel.Dock="Left" Command="{Binding DataContext.EditPhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
-                                            Style="{StaticResource BtnGridEdit}" Margin="0,0,4,0">
+                                            Style="{StaticResource BtnGridEdit}">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Pencil" Width="14" Height="14" VerticalAlignment="Center"/>
                                             <TextBlock Text="Sửa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding DataContext.DeletePhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    <Button DockPanel.Dock="Right" Command="{Binding DataContext.DeletePhieuItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
                                             Style="{StaticResource BtnGridDelete}">
                                         <StackPanel Orientation="Horizontal">
@@ -62,7 +70,7 @@
                                             <TextBlock Text="Xóa" FontSize="12" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                </StackPanel>
+                                </DockPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -133,6 +141,13 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0"
+                                Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="In"/>
+                            </StackPanel>
+                        </Button>
                         <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnSave}" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,6,0"/>

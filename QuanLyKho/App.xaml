@@ -51,9 +51,6 @@
             <DataTemplate DataType="{x:Type vm:TonKhoViewModel}">
                 <views:TonKhoView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:BaoCaoViewModel}">
-                <views:BaoCaoView/>
-            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
