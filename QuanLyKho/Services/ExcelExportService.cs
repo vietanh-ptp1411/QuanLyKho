@@ -13,21 +13,20 @@ public class ExcelExportService : IExcelExportService
         var ws = workbook.Worksheets.Add("Phiếu Nhập Kho");
 
         ws.Cell("A1").Value = "PHIẾU NHẬP KHO";
-        ws.Range("A1:F1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        ws.Range("A1:D1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
 
         ws.Cell("A2").Value = $"Số phiếu: {phieu.SoPhieu}";
         ws.Cell("A3").Value = $"Ngày nhập: {phieu.NgayNhap:dd/MM/yyyy}";
         ws.Cell("A4").Value = $"Người giao hàng: {phieu.NguoiGiaoHang}";
         ws.Cell("A5").Value = $"Kho: {phieu.Kho?.TenKho}";
+        ws.Cell("A6").Value = "Bộ phận: ";
 
-        int row = 7;
+        int row = 8;
         ws.Cell(row, 1).Value = "STT";
         ws.Cell(row, 2).Value = "Tên vật tư";
         ws.Cell(row, 3).Value = "ĐVT";
         ws.Cell(row, 4).Value = "Số lượng";
-        ws.Cell(row, 5).Value = "Đơn giá";
-        ws.Cell(row, 6).Value = "Thành tiền";
-        ws.Range(row, 1, row, 6).Style.Font.SetBold().Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+        ws.Range(row, 1, row, 4).Style.Font.SetBold().Border.SetOutsideBorder(XLBorderStyleValues.Thin);
 
         int stt = 1;
         foreach (var ct in phieu.ChiTietPhieuNhaps)
@@ -37,18 +36,16 @@ public class ExcelExportService : IExcelExportService
             ws.Cell(row, 2).Value = ct.VatTu?.TenVatTu ?? "";
             ws.Cell(row, 3).Value = ct.VatTu?.DonViTinh?.TenDonVi ?? "";
             ws.Cell(row, 4).Value = ct.SoLuong;
-            ws.Cell(row, 5).Value = ct.DonGia;
-            ws.Cell(row, 6).Value = ct.ThanhTien;
-            ws.Range(row, 1, row, 6).Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            ws.Range(row, 1, row, 4).Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
         }
 
         row++;
-        ws.Cell(row, 5).Value = "Tổng cộng:";
-        ws.Cell(row, 5).Style.Font.SetBold();
-        ws.Cell(row, 6).Value = phieu.TongTien;
-        ws.Cell(row, 6).Style.Font.SetBold();
+        ws.Cell(row, 3).Value = "Tổng số lượng:";
+        ws.Cell(row, 3).Style.Font.SetBold();
+        ws.Cell(row, 4).Value = phieu.ChiTietPhieuNhaps.Sum(c => c.SoLuong);
+        ws.Cell(row, 4).Style.Font.SetBold();
 
-        ws.Range(7, 4, row, 6).Style.NumberFormat.Format = "#,##0";
+        ws.Range(8, 4, row, 4).Style.NumberFormat.Format = "#,##0.##";
         ws.Columns().AdjustToContents();
 
         workbook.SaveAs(filePath);

@@ -36,6 +36,7 @@ public partial class NhapKhoViewModel : ObservableObject
     [ObservableProperty] private DateTime _editNgayNhap = DateTime.Now;
     [ObservableProperty] private string _editNguoiGiaoHang = "";
     [ObservableProperty] private Kho? _editKho;
+    [ObservableProperty] private BoPhan? _editBoPhan;
     [ObservableProperty] private string _editNguoiLapPhieu = "";
     [ObservableProperty] private string _editThuKho = "";
     [ObservableProperty] private string _editKeToanTruong = "";
@@ -43,9 +44,11 @@ public partial class NhapKhoViewModel : ObservableObject
     [ObservableProperty] private string _editGhiChu = "";
     [ObservableProperty] private ObservableCollection<ChiTietNhapRow> _chiTietRows = new();
     [ObservableProperty] private decimal _tongTien;
+    [ObservableProperty] private decimal _tongSoLuong;
 
     // Lookups
     [ObservableProperty] private ObservableCollection<Kho> _khos = new();
+    [ObservableProperty] private ObservableCollection<BoPhan> _boPhans = new();
     [ObservableProperty] private ObservableCollection<VatTu> _vatTus = new();
 
     public NhapKhoViewModel(IDbContextFactory<AppDbContext> contextFactory, IPdfExportService pdfService, IExcelExportService excelService)
@@ -65,9 +68,10 @@ public partial class NhapKhoViewModel : ObservableObject
             using var context = await _contextFactory.CreateDbContextAsync();
 
             Khos = new ObservableCollection<Kho>(await context.Khos.ToListAsync());
+            BoPhans = new ObservableCollection<BoPhan>(await context.BoPhans.ToListAsync());
             VatTus = new ObservableCollection<VatTu>(await context.VatTus.Include(v => v.DonViTinh).ToListAsync());
 
-            var query = context.PhieuNhapKhos.Include(p => p.Kho).AsQueryable();
+            var query = context.PhieuNhapKhos.Include(p => p.Kho).Include(p => p.BoPhan).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
@@ -119,6 +123,7 @@ public partial class NhapKhoViewModel : ObservableObject
             EditNgayNhap = DateTime.Now;
             EditNguoiGiaoHang = "";
             EditKho = Khos.FirstOrDefault();
+            EditBoPhan = null;
             EditNguoiLapPhieu = "";
             EditThuKho = "";
             EditKeToanTruong = "";
@@ -163,7 +168,7 @@ public partial class NhapKhoViewModel : ObservableObject
             using var context = await _contextFactory.CreateDbContextAsync();
             var phieu = await context.PhieuNhapKhos
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .Include(p => p.Kho)
+                .Include(p => p.Kho).Include(p => p.BoPhan)
                 .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
 
             if (phieu == null) return;
@@ -172,6 +177,7 @@ public partial class NhapKhoViewModel : ObservableObject
             EditNgayNhap = phieu.NgayNhap;
             EditNguoiGiaoHang = phieu.NguoiGiaoHang;
             EditKho = Khos.FirstOrDefault(k => k.Id == phieu.KhoId);
+            EditBoPhan = phieu.BoPhanId.HasValue ? BoPhans.FirstOrDefault(b => b.Id == phieu.BoPhanId.Value) : null;
             EditNguoiLapPhieu = phieu.NguoiLapPhieu;
             EditThuKho = phieu.ThuKho;
             EditKeToanTruong = phieu.KeToanTruong;
@@ -210,6 +216,7 @@ public partial class NhapKhoViewModel : ObservableObject
     public void RecalcTongTien()
     {
         TongTien = ChiTietRows.Sum(r => r.ThanhTien);
+        TongSoLuong = ChiTietRows.Sum(r => r.SoLuong);
     }
 
     private bool _isSaving;
@@ -277,6 +284,7 @@ public partial class NhapKhoViewModel : ObservableObject
             phieu.NgayNhap       = EditNgayNhap;
             phieu.NguoiGiaoHang  = EditNguoiGiaoHang.Trim();
             phieu.KhoId          = EditKho.Id;
+            phieu.BoPhanId       = EditBoPhan?.Id;
             phieu.NguoiLapPhieu  = EditNguoiLapPhieu.Trim();
             phieu.ThuKho         = EditThuKho.Trim();
             phieu.KeToanTruong   = EditKeToanTruong.Trim();
@@ -382,7 +390,7 @@ public partial class NhapKhoViewModel : ObservableObject
 
             using var context = await _contextFactory.CreateDbContextAsync();
             var phieu = await context.PhieuNhapKhos
-                .Include(p => p.Kho)
+                .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
                 .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
             if (phieu == null) return;
@@ -418,7 +426,7 @@ public partial class NhapKhoViewModel : ObservableObject
 
             using var context = await _contextFactory.CreateDbContextAsync();
             var phieu = await context.PhieuNhapKhos
-                .Include(p => p.Kho)
+                .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
                 .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
             if (phieu != null) await _pdfService.ExportPhieuNhapKho(phieu, dialog.FileName);
@@ -446,7 +454,7 @@ public partial class NhapKhoViewModel : ObservableObject
 
             using var context = await _contextFactory.CreateDbContextAsync();
             var phieu = await context.PhieuNhapKhos
-                .Include(p => p.Kho)
+                .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
                 .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
             if (phieu != null) await _excelService.ExportPhieuNhapKho(phieu, dialog.FileName);

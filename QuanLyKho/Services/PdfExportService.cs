@@ -25,20 +25,11 @@ public class PdfExportService : IPdfExportService
 
                 page.Content().Column(col =>
                 {
-                    // Header 2 cột
-                    col.Item().Row(row =>
+                    // Header
+                    col.Item().Column(left =>
                     {
-                        row.RelativeItem(1).Column(left =>
-                        {
-                            left.Item().Text("Đơn vị: " + CompanyName).FontSize(9);
-                            left.Item().Text("Bộ phận: ............................").FontSize(9);
-                        });
-                        row.RelativeItem(1).AlignRight().Column(right =>
-                        {
-                            right.Item().AlignRight().Text("Mẫu số: 01 - VT").Bold().FontSize(9);
-                            right.Item().AlignRight().Text("(Ban hành theo TT số 200/2014/TT-BTC").FontSize(7).Italic();
-                            right.Item().AlignRight().Text("Ngày 22/12/2014 của Bộ Tài Chính)").FontSize(7).Italic();
-                        });
+                        left.Item().Text("Đơn vị: " + CompanyName).FontSize(9);
+                        left.Item().Text("Bộ phận: ").FontSize(9);
                     });
 
                     col.Item().Height(15);
@@ -70,12 +61,10 @@ public class PdfExportService : IPdfExportService
                         table.ColumnsDefinition(columns =>
                         {
                             columns.ConstantColumn(30);   // STT
-                            columns.RelativeColumn(4);    // Tên vật tư
-                            columns.RelativeColumn(1);    // Mã số
-                            columns.RelativeColumn(0.8f); // ĐVT
-                            columns.RelativeColumn(1.2f); // Số lượng
-                            columns.RelativeColumn(1.3f); // Đơn giá
-                            columns.RelativeColumn(1.5f); // Thành tiền
+                            columns.RelativeColumn(5);    // Tên vật tư
+                            columns.RelativeColumn(1.2f); // Mã số
+                            columns.RelativeColumn(1);    // ĐVT
+                            columns.RelativeColumn(1.5f); // Số lượng
                         });
 
                         // Header
@@ -90,8 +79,6 @@ public class PdfExportService : IPdfExportService
                             HC(header.Cell(), "Mã số");
                             HC(header.Cell(), "ĐVT");
                             HC(header.Cell(), "Số lượng\nthực nhập");
-                            HC(header.Cell(), "Đơn giá");
-                            HC(header.Cell(), "Thành tiền");
                         });
 
                         int stt = 1;
@@ -102,22 +89,15 @@ public class PdfExportService : IPdfExportService
                             table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.MaVatTu ?? "").FontSize(9);
                             table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
                             table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.SoLuong.ToString("N2")).FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.DonGia.ToString("N0")).FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.ThanhTien.ToString("N0")).FontSize(9);
                             stt++;
                         }
 
-                        // Dòng Cộng
-                        table.Cell().ColumnSpan(6).Border(0.5f).Padding(3).AlignRight().Text("Cộng:").Bold().FontSize(9);
-                        table.Cell().Border(0.5f).Padding(3).AlignRight().Text(phieu.TongTien.ToString("N0")).Bold().FontSize(9);
+                        // Dòng Tổng số lượng
+                        table.Cell().ColumnSpan(4).Border(0.5f).Padding(3).AlignRight().Text("Tổng số lượng:").Bold().FontSize(9);
+                        table.Cell().Border(0.5f).Padding(3).AlignRight().Text(phieu.ChiTietPhieuNhaps.Sum(c => c.SoLuong).ToString("N2")).Bold().FontSize(9);
                     });
 
                     col.Item().Height(6);
-                    col.Item().Text(t =>
-                    {
-                        t.Span("Tổng số tiền (viết bằng chữ): ").Bold().FontSize(9);
-                        t.Span("..............................................................").FontSize(9);
-                    });
                     col.Item().Text("Số chứng từ gốc kèm theo: ..............").FontSize(9);
 
                     col.Item().Height(8);
@@ -169,8 +149,12 @@ public class PdfExportService : IPdfExportService
                         row.RelativeItem(2).Column(left =>
                         {
                             left.Item().Text(CompanyName).Bold().FontSize(10);
-                            left.Item().Text(CompanyAddr).FontSize(8);
-                            left.Item().Text($"Liên hệ: Kho {phieu.Kho?.TenKho}").FontSize(8);
+                            left.Item().Text("Liên hệ:").FontSize(8);
+                            left.Item().Text(t =>
+                            {
+                                t.Span("Kho: ").FontSize(8);
+                                t.Span(phieu.Kho?.TenKho ?? "").FontSize(8);
+                            });
                         });
                         row.RelativeItem(1).AlignRight().Column(right =>
                         {
@@ -192,7 +176,7 @@ public class PdfExportService : IPdfExportService
                         row.RelativeItem().Column(left =>
                         {
                             left.Item().Text(t => { t.Span("Họ và tên người xin cấp vật: ").Bold(); t.Span(phieu.NguoiNhan); });
-                            left.Item().Text(t => { t.Span("Bộ Phận: ").Bold(); t.Span(phieu.BoPhan?.TenBoPhan ?? ""); });
+                            left.Item().Text(t => { t.Span("Bộ Phận: ").Bold(); });
                             left.Item().Text(t => { t.Span("Nơi nhận: ").Bold(); t.Span(phieu.NoiNhan); });
                         });
                         row.RelativeItem().Column(right =>

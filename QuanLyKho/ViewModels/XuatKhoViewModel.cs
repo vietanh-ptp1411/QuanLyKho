@@ -44,11 +44,14 @@ public partial class XuatKhoViewModel : ObservableObject
     [ObservableProperty] private string _editGhiChu = "";
     [ObservableProperty] private ObservableCollection<ChiTietXuatRow> _chiTietRows = new();
     [ObservableProperty] private decimal _tongTien;
+    [ObservableProperty] private decimal _tongSoLuong;
     [ObservableProperty] private string _errorMessage = "";
 
     [ObservableProperty] private ObservableCollection<Kho> _khos = new();
     [ObservableProperty] private ObservableCollection<BoPhan> _boPhans = new();
     [ObservableProperty] private ObservableCollection<VatTu> _vatTus = new();
+
+    private List<VatTu> _allVatTus = new();
 
     public XuatKhoViewModel(IDbContextFactory<AppDbContext> contextFactory, IPdfExportService pdfService, IExcelExportService excelService)
     {
@@ -68,7 +71,8 @@ public partial class XuatKhoViewModel : ObservableObject
 
             Khos = new ObservableCollection<Kho>(await context.Khos.ToListAsync());
             BoPhans = new ObservableCollection<BoPhan>(await context.BoPhans.ToListAsync());
-            VatTus = new ObservableCollection<VatTu>(await context.VatTus.Include(v => v.DonViTinh).ToListAsync());
+            _allVatTus = await context.VatTus.Include(v => v.DonViTinh).ToListAsync();
+            VatTus = new ObservableCollection<VatTu>(_allVatTus);
 
             var query = context.PhieuXuatKhos.Include(p => p.Kho).Include(p => p.BoPhan).AsQueryable();
 
@@ -93,6 +97,48 @@ public partial class XuatKhoViewModel : ObservableObject
     }
 
     partial void OnSearchTextChanged(string value) => LoadDataCommand.ExecuteAsync(null);
+
+    partial void OnEditKhoChanged(Kho? value) => _ = RefreshAvailableVatTusAsync();
+
+    private async Task RefreshAvailableVatTusAsync()
+    {
+        try
+        {
+            if (EditKho == null)
+            {
+                VatTus = new ObservableCollection<VatTu>(_allVatTus);
+                return;
+            }
+
+            using var context = await _contextFactory.CreateDbContextAsync();
+            int khoId = EditKho.Id;
+
+            var nhapByVatTu = await context.ChiTietPhieuNhaps
+                .Where(ct => ct.PhieuNhapKho.KhoId == khoId)
+                .GroupBy(ct => ct.VatTuId)
+                .Select(g => new { VatTuId = g.Key, SoLuong = g.Sum(x => x.SoLuong) })
+                .ToDictionaryAsync(x => x.VatTuId, x => x.SoLuong);
+
+            var xuatByVatTu = await context.ChiTietPhieuXuats
+                .Where(ct => ct.PhieuXuatKho.KhoId == khoId)
+                .GroupBy(ct => ct.VatTuId)
+                .Select(g => new { VatTuId = g.Key, SoLuong = g.Sum(x => x.SoLuong) })
+                .ToDictionaryAsync(x => x.VatTuId, x => x.SoLuong);
+
+            var availableIds = nhapByVatTu.Keys
+                .Where(id => nhapByVatTu[id] - (xuatByVatTu.TryGetValue(id, out var xv) ? xv : 0m) > 0)
+                .ToHashSet();
+
+            foreach (var row in ChiTietRows)
+                if (row.VatTu != null) availableIds.Add(row.VatTu.Id);
+
+            VatTus = new ObservableCollection<VatTu>(_allVatTus.Where(v => availableIds.Contains(v.Id)));
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi tải danh sách vật tư: {ex.Message}";
+        }
+    }
 
     [RelayCommand]
     private void NextPage() { if (CurrentPage < TotalPages) { CurrentPage++; ApplyPaging(); } }
@@ -189,12 +235,13 @@ public partial class XuatKhoViewModel : ObservableObject
             ChiTietRows = new ObservableCollection<ChiTietXuatRow>(
                 phieu.ChiTietPhieuXuats.Select(ct => new ChiTietXuatRow(this)
                 {
-                    VatTu = VatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
+                    VatTu = _allVatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
                     SoLuong = ct.SoLuong,
                     DonGia = ct.DonGia,
                     ThanhTien = ct.ThanhTien
                 }));
             RecalcTongTien();
+            await RefreshAvailableVatTusAsync();
         }
         catch (Exception ex)
         {
@@ -212,7 +259,11 @@ public partial class XuatKhoViewModel : ObservableObject
         RecalcTongTien();
     }
 
-    public void RecalcTongTien() => TongTien = ChiTietRows.Sum(r => r.ThanhTien);
+    public void RecalcTongTien()
+    {
+        TongTien = ChiTietRows.Sum(r => r.ThanhTien);
+        TongSoLuong = ChiTietRows.Sum(r => r.SoLuong);
+    }
 
     private bool _isSaving;
 

@@ -244,6 +244,28 @@ public partial class TonKhoViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task ExportExcel()
+    {
+        try
+        {
+            ErrorMessage = "";
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel (*.xlsx)|*.xlsx",
+                FileName = $"TonKho_T{SelectedMonth}_{SelectedYear}.xlsx"
+            };
+            if (dialog.ShowDialog() != true) return;
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var khoId = FilterKho?.Id ?? 0;
+            await _excelService.ExportNhapXuatTonKho(context, dialog.FileName, khoId, SelectedMonth, SelectedYear);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xuất Excel: {ex.Message}";
+        }
+    }
+
     partial void OnSearchTextChanged(string value) => LoadDataCommand.ExecuteAsync(null);
     partial void OnFilterKhoChanged(Kho? value) => LoadDataCommand.ExecuteAsync(null);
     partial void OnFilterNhomChanged(NhomVatTu? value) => LoadDataCommand.ExecuteAsync(null);

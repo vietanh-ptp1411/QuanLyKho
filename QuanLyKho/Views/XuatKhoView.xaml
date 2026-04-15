@@ -81,11 +81,8 @@
                     <DataGridTextColumn Header="Người nhận" Binding="{Binding NguoiNhan}" Width="*"/>
                     <DataGridTextColumn Header="Kho" Binding="{Binding Kho.TenKho}" Width="130"/>
                     <DataGridTextColumn Header="Bộ phận" Binding="{Binding BoPhan.TenBoPhan}" Width="130"/>
-                    <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TongTien, StringFormat=N0}" Width="130">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Mục đích sử dụng" Binding="{Binding MucDichSuDung}" Width="160"/>
+                    <DataGridTextColumn Header="Nơi nhận" Binding="{Binding NoiNhan}" Width="140"/>
                     <DataGridTemplateColumn Header="Thao tác" Width="165">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -238,6 +235,11 @@
                             <TextBox Text="{Binding EditMucDichSuDung, UpdateSourceTrigger=PropertyChanged}" Width="200"
                                      Style="{StaticResource FormTextBox}"/>
                         </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Nơi nhận" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding EditNoiNhan, UpdateSourceTrigger=PropertyChanged}" Width="200"
+                                     Style="{StaticResource FormTextBox}"/>
+                        </StackPanel>
                     </WrapPanel>
                 </materialDesign:Card>
 
@@ -247,7 +249,10 @@
                           CanUserAddRows="False" FontSize="13" RowHeight="40" ColumnHeaderHeight="38"
                           Style="{StaticResource MaterialDesignDataGrid}" Margin="0,0,0,0">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Vật tư (chọn từ danh sách)" Width="*">
+                        <DataGridTextColumn Header="Số phiếu xuất"
+                                            Binding="{Binding DataContext.EditSoPhieu, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
+                                            Width="120" IsReadOnly="True"/>
+                        <DataGridTemplateColumn Header="Tên mặt hàng" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding DataContext.VatTus, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -262,8 +267,13 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="ĐVT" Binding="{Binding VatTu.DonViTinh.TenDonVi, Mode=OneWay}" Width="70" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                        <DataGridTextColumn Header="Đơn giá" Binding="{Binding DonGia, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
-                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding ThanhTien, StringFormat=N0}" Width="130" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Mục đích sử dụng"
+                                            Binding="{Binding DataContext.EditMucDichSuDung, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
+                                            Width="160" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Nơi nhận"
+                                            Binding="{Binding DataContext.EditNoiNhan, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
+                                            Width="140" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Mã vật tư" Binding="{Binding VatTu.MaVatTu, Mode=OneWay}" Width="100" IsReadOnly="True"/>
                         <DataGridTemplateColumn Header="" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -278,6 +288,26 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
+                <!-- Tổng số lượng (căn thẳng cột Số lượng) -->
+                <Grid Background="#F8FAFC" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="Tổng số lượng:"
+                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                               FontWeight="SemiBold" FontSize="13" Padding="8,6"/>
+                    <TextBlock Grid.Column="3" Text="{Binding TongSoLuong, StringFormat=N2, Mode=OneWay}"
+                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                               FontWeight="SemiBold" FontSize="13" Foreground="#DC2626" Padding="8,6"/>
+                </Grid>
+
                 <Button Command="{Binding AddRowCommand}" HorizontalAlignment="Stretch" Height="38"
                         BorderBrush="#CCCCCC" BorderThickness="1" Background="White" Cursor="Hand"
                         Margin="0,0,0,8">
@@ -291,12 +321,6 @@
                         <TextBlock Text="  Thêm dòng mới" Foreground="#555" FontSize="13" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-
-                <Border Background="#EFF6FF" CornerRadius="8" Padding="16,10" HorizontalAlignment="Right" Margin="0,0,0,10">
-                    <TextBlock FontSize="16" FontWeight="Bold">
-                        <Run Text="TỔNG TIỀN:  "/><Run Text="{Binding TongTien, StringFormat=N0, Mode=OneWay}" Foreground="#DC2626"/><Run Text=" đ"/>
-                    </TextBlock>
-                </Border>
 
                 <materialDesign:Card Padding="16" Margin="0,0,0,10">
                     <StackPanel>

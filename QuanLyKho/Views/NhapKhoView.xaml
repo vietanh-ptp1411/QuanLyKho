@@ -80,11 +80,7 @@
                     <DataGridTextColumn Header="Ngày nhập" Binding="{Binding NgayNhap, StringFormat=dd/MM/yyyy}" Width="110"/>
                     <DataGridTextColumn Header="Người giao hàng" Binding="{Binding NguoiGiaoHang}" Width="*"/>
                     <DataGridTextColumn Header="Kho" Binding="{Binding Kho.TenKho}" Width="150"/>
-                    <DataGridTextColumn Header="Tổng tiền" Binding="{Binding TongTien, StringFormat=N0}" Width="140">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Bộ phận" Binding="{Binding BoPhan.TenBoPhan}" Width="150"/>
                     <DataGridTemplateColumn Header="Thao tác" Width="165">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -215,6 +211,13 @@
                                       Style="{StaticResource FormComboBox}"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Bộ phận" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding BoPhans}" SelectedItem="{Binding EditBoPhan}"
+                                      DisplayMemberPath="TenBoPhan" Width="200"
+                                      Style="{StaticResource FormComboBox}"
+                                      materialDesign:TextFieldAssist.HasClearButton="True"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
                             <TextBlock Text="Người giao hàng" FontWeight="SemiBold" Margin="0,0,0,4"/>
                             <TextBox Text="{Binding EditNguoiGiaoHang, UpdateSourceTrigger=PropertyChanged}" Width="200"
                                      Style="{StaticResource FormTextBox}"/>
@@ -249,8 +252,6 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="ĐVT" Binding="{Binding VatTu.DonViTinh.TenDonVi, Mode=OneWay}" Width="70" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                        <DataGridTextColumn Header="Đơn giá" Binding="{Binding DonGia, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
-                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding ThanhTien, StringFormat=N0}" Width="130" IsReadOnly="True"/>
                         <DataGridTemplateColumn Header="" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -264,6 +265,22 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <!-- Tổng số lượng (căn thẳng cột Số lượng) -->
+                <Grid Background="#F8FAFC" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="Tổng số lượng:"
+                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                               FontWeight="SemiBold" FontSize="13" Padding="8,6"/>
+                    <TextBlock Grid.Column="2" Text="{Binding TongSoLuong, StringFormat=N2, Mode=OneWay}"
+                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                               FontWeight="SemiBold" FontSize="13" Foreground="#DC2626" Padding="8,6"/>
+                </Grid>
 
                 <!-- Nút thêm dòng ở cuối bảng -->
                 <Button Command="{Binding AddRowCommand}" HorizontalAlignment="Stretch" Height="38"
@@ -279,13 +296,6 @@
                         <TextBlock Text="  Thêm dòng mới" Foreground="#555" FontSize="13" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-
-                <!-- Tổng tiền -->
-                <Border Background="#EFF6FF" CornerRadius="8" Padding="16,10" HorizontalAlignment="Right" Margin="0,0,0,10">
-                    <TextBlock FontSize="16" FontWeight="Bold">
-                        <Run Text="TỔNG TIỀN:  "/><Run Text="{Binding TongTien, StringFormat=N0, Mode=OneWay}" Foreground="#DC2626"/><Run Text=" đ"/>
-                    </TextBlock>
-                </Border>
 
                 <!-- Chữ ký -->
                 <materialDesign:Card Padding="16" Margin="0,0,0,10">

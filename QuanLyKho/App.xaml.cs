@@ -70,6 +70,7 @@ public partial class App : Application
             var contextFactory = _serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
             using var context = contextFactory.CreateDbContext();
             context.Database.EnsureCreated();
+            EnsureSchemaUpToDate(context);
 
             // Tạo shortcut Desktop lần đầu
             CreateDesktopShortcut();
@@ -82,6 +83,42 @@ public partial class App : Application
         {
             MessageBox.Show($"Lỗi khởi động ứng dụng:\n{ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
+        }
+    }
+
+    private static void EnsureSchemaUpToDate(Data.AppDbContext context)
+    {
+        try
+        {
+            var conn = context.Database.GetDbConnection();
+            if (conn.State != System.Data.ConnectionState.Open) conn.Open();
+
+            bool HasColumn(string table, string column)
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"PRAGMA table_info({table});";
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    if (string.Equals(reader.GetString(1), column, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                return false;
+            }
+
+            void Exec(string sql)
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.ExecuteNonQuery();
+            }
+
+            if (!HasColumn("PhieuNhapKhos", "BoPhanId"))
+                Exec("ALTER TABLE PhieuNhapKhos ADD COLUMN BoPhanId INTEGER NULL;");
+        }
+        catch
+        {
+            // Bỏ qua nếu schema đã đúng hoặc DB chưa tạo
         }
     }
 

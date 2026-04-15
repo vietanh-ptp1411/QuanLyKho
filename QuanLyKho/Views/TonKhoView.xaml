@@ -64,6 +64,12 @@
                     <TextBlock Text="Xuất PDF"/>
                 </StackPanel>
             </Button>
+            <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource BtnExcel}">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="MicrosoftExcel" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="Xuất Excel"/>
+                </StackPanel>
+            </Button>
         </WrapPanel>
 
         <!-- Thông tin kỳ -->

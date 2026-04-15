@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Phần mềm quản lý kho vật tư")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+275583d4888544c147236dd8c99b845433e913aa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb1630f85ced022f436733bb580fe5f5350a90f5")]
 [assembly: System.Reflection.AssemblyProductAttribute("Quản Lý Kho - Sông Hồng Thủ Đô")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuanLyKho")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

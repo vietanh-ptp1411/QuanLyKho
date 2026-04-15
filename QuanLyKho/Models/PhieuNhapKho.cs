@@ -17,6 +17,9 @@ public class PhieuNhapKho
     public int KhoId { get; set; }
     public Kho Kho { get; set; } = null!;
 
+    public int? BoPhanId { get; set; }
+    public BoPhan? BoPhan { get; set; }
+
     [MaxLength(200)]
     public string NguoiLapPhieu { get; set; } = "";
 
