@@ -22,112 +22,76 @@ public class PdfExportService : IPdfExportService
                 page.MarginHorizontal(1.5f, Unit.Centimetre);
                 page.MarginVertical(1.2f, Unit.Centimetre);
                 page.DefaultTextStyle(x => x.FontSize(10));
-
-                page.Content().Column(col =>
-                {
-                    // Header
-                    col.Item().Column(left =>
-                    {
-                        left.Item().Text("Đơn vị: " + CompanyName).FontSize(9);
-                        left.Item().Text("Bộ phận: ").FontSize(9);
-                    });
-
-                    col.Item().Height(15);
-
-                    // Tiêu đề
-                    col.Item().AlignCenter().Text("PHIẾU NHẬP KHO").Bold().FontSize(18);
-                    col.Item().AlignCenter().Text($"Ngày {phieu.NgayNhap:dd} tháng {phieu.NgayNhap:MM} năm {phieu.NgayNhap:yyyy}").FontSize(10);
-                    col.Item().AlignCenter().Text($"Số: {phieu.SoPhieu}").FontSize(10);
-
-                    col.Item().Height(10);
-
-                    // Thông tin
-                    col.Item().Text(t =>
-                    {
-                        t.Span("Họ và tên người giao hàng: ").Bold();
-                        t.Span(phieu.NguoiGiaoHang);
-                    });
-                    col.Item().Text(t =>
-                    {
-                        t.Span("Nhập tại kho: ").Bold();
-                        t.Span(phieu.Kho?.TenKho ?? "");
-                    });
-
-                    col.Item().Height(8);
-
-                    // Bảng chi tiết
-                    col.Item().Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.ConstantColumn(30);   // STT
-                            columns.RelativeColumn(5);    // Tên vật tư
-                            columns.RelativeColumn(1.2f); // Mã số
-                            columns.RelativeColumn(1);    // ĐVT
-                            columns.RelativeColumn(1.5f); // Số lượng
-                        });
-
-                        // Header
-                        table.Header(header =>
-                        {
-                            void HC(IContainer c, string text) =>
-                                c.Border(0.5f).Background("#E0E0E0").Padding(4).AlignCenter().AlignMiddle()
-                                 .Text(text).Bold().FontSize(9);
-
-                            HC(header.Cell(), "STT");
-                            HC(header.Cell(), "Tên nhãn hiệu, quy cách,\nphẩm chất vật tư");
-                            HC(header.Cell(), "Mã số");
-                            HC(header.Cell(), "ĐVT");
-                            HC(header.Cell(), "Số lượng\nthực nhập");
-                        });
-
-                        int stt = 1;
-                        foreach (var ct in phieu.ChiTietPhieuNhaps)
-                        {
-                            table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(stt.ToString()).FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).Text(ct.VatTu?.TenVatTu ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.MaVatTu ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.SoLuong.ToString("N2")).FontSize(9);
-                            stt++;
-                        }
-
-                        // Dòng Tổng số lượng
-                        table.Cell().ColumnSpan(4).Border(0.5f).Padding(3).AlignRight().Text("Tổng số lượng:").Bold().FontSize(9);
-                        table.Cell().Border(0.5f).Padding(3).AlignRight().Text(phieu.ChiTietPhieuNhaps.Sum(c => c.SoLuong).ToString("N2")).Bold().FontSize(9);
-                    });
-
-                    col.Item().Height(6);
-                    col.Item().Text("Số chứng từ gốc kèm theo: ..............").FontSize(9);
-
-                    col.Item().Height(8);
-                    col.Item().AlignRight().Text($"Nhập, Ngày {phieu.NgayNhap:dd} tháng {phieu.NgayNhap:MM} năm {phieu.NgayNhap:yyyy}").FontSize(9);
-
-                    col.Item().Height(8);
-
-                    // Khối chữ ký (để trống cho ký ngoài đời)
-                    col.Item().Row(row =>
-                    {
-                        void SignBlock(IContainer c, string title)
-                        {
-                            c.AlignCenter().Column(sc =>
-                            {
-                                sc.Item().AlignCenter().Text(title).Bold().FontSize(9);
-                                sc.Item().AlignCenter().Text("(Ký, họ tên)").Italic().FontSize(7);
-                                sc.Item().Height(50);
-                            });
-                        }
-                        row.RelativeItem().Element(c => SignBlock(c, "Người lập phiếu"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Người giao hàng"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Thủ kho"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Kế toán trưởng"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Giám đốc"));
-                    });
-                });
+                page.Content().Column(col => RenderPhieuNhapKhoContent(col, phieu));
             });
         }).GeneratePdf(filePath);
-
         return Task.CompletedTask;
+    }
+
+    private void RenderPhieuNhapKhoContent(ColumnDescriptor col, PhieuNhapKho phieu)
+    {
+        col.Item().Row(row =>
+        {
+            row.RelativeItem(2).Column(left =>
+            {
+                left.Item().Text(CompanyName).Bold().Italic().FontSize(10);
+                left.Item().Text("Khu đô thị Bắc Đầm Vạc").Italic().FontSize(9);
+                left.Item().Text(t => { t.Span("Bộ phận: ").Italic().FontSize(9); t.Span(phieu.BoPhan?.TenBoPhan ?? "").FontSize(9); });
+            });
+            row.RelativeItem(1).AlignRight().Column(right =>
+            {
+                right.Item().AlignRight().Text("SÔNG HỒNG THỦ ĐÔ").Bold().FontSize(11);
+                right.Item().AlignRight().Text(t => { t.Span("Số HĐ: ").Bold().FontSize(10); t.Span(phieu.SoHopDong).FontSize(10); });
+            });
+        });
+        col.Item().Height(15);
+        col.Item().AlignCenter().Text("PHIẾU NHẬP KHO").Bold().FontSize(18);
+        col.Item().AlignCenter().Text($"Ngày {phieu.NgayNhap:dd} tháng {phieu.NgayNhap:MM} năm {phieu.NgayNhap:yyyy}").FontSize(10);
+        col.Item().AlignCenter().Text($"Số : {phieu.SoPhieu}").FontSize(10);
+        col.Item().Height(10);
+        col.Item().Text(t => { t.Span("Họ tên người giao hàng: ").Bold(); t.Span(phieu.NguoiGiaoHang); });
+        col.Item().Text(t => { t.Span("Nhập tại kho: ").Bold(); t.Span(phieu.Kho?.TenKho ?? ""); });
+        col.Item().Height(8);
+        col.Item().Table(table =>
+        {
+            table.ColumnsDefinition(columns =>
+            {
+                columns.ConstantColumn(30); columns.RelativeColumn(4); columns.RelativeColumn(1.2f);
+                columns.RelativeColumn(0.8f); columns.RelativeColumn(1.2f); columns.RelativeColumn(1.5f);
+            });
+            table.Header(header =>
+            {
+                void HC(IContainer c, string text) => c.Border(0.5f).Background("#E0E0E0").Padding(4).AlignCenter().AlignMiddle().Text(text).Bold().FontSize(9);
+                HC(header.Cell(), "STT"); HC(header.Cell(), "Tên sản phẩm, hàng hóa"); HC(header.Cell(), "Mã vật tư");
+                HC(header.Cell(), "ĐVT"); HC(header.Cell(), "Số lượng\nthực nhập"); HC(header.Cell(), "Nhà cung cấp");
+            });
+            int stt = 1;
+            foreach (var ct in phieu.ChiTietPhieuNhaps)
+            {
+                table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(stt.ToString()).FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).Text(ct.VatTu?.TenVatTu ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.MaVatTu ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.SoLuong.ToString("N2")).FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).Text(ct.NhaCungCap ?? "").FontSize(9);
+                stt++;
+            }
+            table.Cell().ColumnSpan(4).Border(0.5f).Padding(3).AlignRight().Text("Tổng số lượng:").Bold().FontSize(9);
+            table.Cell().Border(0.5f).Padding(3).AlignRight().Text(phieu.ChiTietPhieuNhaps.Sum(c => c.SoLuong).ToString("N2")).Bold().FontSize(9);
+            table.Cell().Border(0.5f).Padding(3).Text("").FontSize(9);
+        });
+        col.Item().Height(15);
+        col.Item().AlignRight().Text($"Nhập, ngày {phieu.NgayNhap:dd} tháng {phieu.NgayNhap:MM} năm {phieu.NgayNhap:yyyy}").Bold().FontSize(10);
+        col.Item().Height(8);
+        col.Item().Row(row =>
+        {
+            void SignBlock(IContainer c, string title) { c.AlignCenter().Column(sc => { sc.Item().AlignCenter().Text(title).Bold().FontSize(9); sc.Item().AlignCenter().Text("(ký ,họ tên)").Italic().FontSize(7); sc.Item().Height(50); }); }
+            row.RelativeItem().Element(c => SignBlock(c, "Người lập phiếu"));
+            row.RelativeItem().Element(c => SignBlock(c, "Người giao hàng"));
+            row.RelativeItem().Element(c => SignBlock(c, "Thủ kho"));
+            row.RelativeItem().Element(c => SignBlock(c, "Kế toán trưởng"));
+            row.RelativeItem().Element(c => SignBlock(c, "Giám đốc"));
+        });
     }
 
     public Task ExportPhieuXuatKho(PhieuXuatKho phieu, string filePath)
@@ -140,127 +104,84 @@ public class PdfExportService : IPdfExportService
                 page.MarginHorizontal(1.5f, Unit.Centimetre);
                 page.MarginVertical(1.2f, Unit.Centimetre);
                 page.DefaultTextStyle(x => x.FontSize(10));
-
-                page.Content().Column(col =>
-                {
-                    // Header: logo bên phải, tên công ty bên trái
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem(2).Column(left =>
-                        {
-                            left.Item().Text(CompanyName).Bold().FontSize(10);
-                            left.Item().Text("Liên hệ:").FontSize(8);
-                            left.Item().Text(t =>
-                            {
-                                t.Span("Kho: ").FontSize(8);
-                                t.Span(phieu.Kho?.TenKho ?? "").FontSize(8);
-                            });
-                        });
-                        row.RelativeItem(1).AlignRight().Column(right =>
-                        {
-                            right.Item().AlignRight().Text("SÔNG HỒNG THỦ ĐÔ").Bold().FontSize(11);
-                        });
-                    });
-
-                    col.Item().Height(12);
-
-                    // Tiêu đề
-                    col.Item().AlignCenter().Text("PHIẾU XUẤT KHO KINH DOANH SHTD").Bold().FontSize(15);
-                    col.Item().AlignCenter().Text($"Số phiếu xuất: {phieu.SoPhieu}").FontSize(10);
-
-                    col.Item().Height(8);
-
-                    // Thông tin phiếu - 2 cột
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem().Column(left =>
-                        {
-                            left.Item().Text(t => { t.Span("Họ và tên người xin cấp vật: ").Bold(); t.Span(phieu.NguoiNhan); });
-                            left.Item().Text(t => { t.Span("Bộ Phận: ").Bold(); });
-                            left.Item().Text(t => { t.Span("Nơi nhận: ").Bold(); t.Span(phieu.NoiNhan); });
-                        });
-                        row.RelativeItem().Column(right =>
-                        {
-                            right.Item().Text(t => { t.Span("Ngày tháng xuất: ").Bold(); t.Span(phieu.NgayXuat.ToString("dd/MM/yyyy")); });
-                            right.Item().Text(t => { t.Span("Mục đích sử dụng: ").Bold(); t.Span(phieu.MucDichSuDung); });
-                        });
-                    });
-
-                    col.Item().Height(8);
-
-                    // Bảng chi tiết
-                    col.Item().Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.ConstantColumn(55);   // Số phiếu xuất
-                            columns.RelativeColumn(4);    // Tên mặt hàng
-                            columns.RelativeColumn(0.8f); // Đvt
-                            columns.RelativeColumn(1.2f); // Số lượng
-                            columns.RelativeColumn(2);    // Mục đích sử dụng
-                            columns.RelativeColumn(1.5f); // Nơi nhận
-                            columns.RelativeColumn(1);    // Mã vật tư
-                        });
-
-                        table.Header(header =>
-                        {
-                            void HC(IContainer c, string text) =>
-                                c.Border(0.5f).Background("#E0E0E0").Padding(3).AlignCenter().AlignMiddle()
-                                 .Text(text).Bold().FontSize(8);
-
-                            HC(header.Cell(), "Số phiếu\nxuất");
-                            HC(header.Cell(), "Tên mặt hàng");
-                            HC(header.Cell(), "Đvt");
-                            HC(header.Cell(), "Số\nlượng");
-                            HC(header.Cell(), "Mục đích sử dụng");
-                            HC(header.Cell(), "Nơi nhận");
-                            HC(header.Cell(), "Mã vật tư");
-                        });
-
-                        foreach (var ct in phieu.ChiTietPhieuXuats)
-                        {
-                            table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(phieu.SoPhieu).FontSize(8);
-                            table.Cell().Border(0.5f).Padding(3).Text(ct.VatTu?.TenVatTu ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.SoLuong.ToString("N2")).FontSize(9);
-                            table.Cell().Border(0.5f).Padding(3).Text(phieu.MucDichSuDung).FontSize(8);
-                            table.Cell().Border(0.5f).Padding(3).Text(phieu.NoiNhan).FontSize(8);
-                            table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.MaVatTu ?? "").FontSize(8);
-                        }
-
-                        // Tổng cộng
-                        table.Cell().Border(0.5f).Padding(3).Text("").FontSize(8);
-                        table.Cell().Border(0.5f).Padding(3).AlignRight().Text("Tổng cộng:").Bold().FontSize(9);
-                        table.Cell().Border(0.5f).Padding(3).Text("").FontSize(8);
-                        table.Cell().Border(0.5f).Padding(3).AlignRight().Text(
-                            phieu.ChiTietPhieuXuats.Sum(c => c.SoLuong).ToString("N2")).Bold().FontSize(9);
-                        table.Cell().ColumnSpan(3).Border(0.5f).Padding(3).Text("").FontSize(8);
-                    });
-
-                    col.Item().Height(15);
-
-                    // Chữ ký (để trống)
-                    col.Item().Row(row =>
-                    {
-                        void SignBlock(IContainer c, string title)
-                        {
-                            c.AlignCenter().Column(sc =>
-                            {
-                                sc.Item().AlignCenter().Text(title).Bold().FontSize(9);
-                                sc.Item().AlignCenter().Text("(Ký, họ tên)").Italic().FontSize(7);
-                                sc.Item().Height(50);
-                            });
-                        }
-                        row.RelativeItem().Element(c => SignBlock(c, "Thủ kho"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Người nhận hàng"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Kế toán"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Giám đốc"));
-                    });
-                });
+                page.Content().Column(col => RenderPhieuXuatKhoContent(col, phieu));
             });
         }).GeneratePdf(filePath);
-
         return Task.CompletedTask;
+    }
+
+    private void RenderPhieuXuatKhoContent(ColumnDescriptor col, PhieuXuatKho phieu)
+    {
+        col.Item().Row(row =>
+        {
+            row.RelativeItem(2).Column(left =>
+            {
+                left.Item().Text(CompanyName).Bold().FontSize(10);
+                left.Item().Text("Khu đô thị Bắc Đầm Vạc").Italic().FontSize(9);
+                left.Item().Text(t => { t.Span("Kho: ").FontSize(9); t.Span(phieu.Kho?.TenKho ?? "").FontSize(9); });
+            });
+            row.RelativeItem(1).AlignRight().Column(right =>
+            {
+                right.Item().AlignRight().Text("SÔNG HỒNG THỦ ĐÔ").Bold().FontSize(11);
+            });
+        });
+        col.Item().Height(12);
+        col.Item().AlignCenter().Text("PHIẾU XUẤT KHO KINH DOANH SHTD").Bold().FontSize(15);
+        col.Item().AlignCenter().Text($"Số phiếu xuất: {phieu.SoPhieu}").FontSize(10);
+        col.Item().Height(8);
+        col.Item().Row(row =>
+        {
+            row.RelativeItem().Column(left =>
+            {
+                left.Item().Text(t => { t.Span("Họ tên người xin cấp vật tư : ").Bold(); t.Span(phieu.NguoiNhan); });
+                left.Item().Text(t => { t.Span("Bộ Phận: ").Bold(); t.Span(phieu.BoPhan?.TenBoPhan ?? ""); });
+                left.Item().Text(t => { t.Span("Nơi nhận: ").Bold(); t.Span(phieu.NoiNhan); });
+            });
+            row.RelativeItem().Column(right =>
+            {
+                right.Item().Text(t => { t.Span("Ngày tháng xuất: ").Bold(); t.Span(phieu.NgayXuat.ToString("dd/MM/yyyy")); });
+                right.Item().Text(t => { t.Span("Mục đích sử dụng: ").Bold(); t.Span(phieu.MucDichSuDung); });
+            });
+        });
+        col.Item().Height(8);
+        col.Item().Table(table =>
+        {
+            table.ColumnsDefinition(columns =>
+            {
+                columns.ConstantColumn(30); columns.RelativeColumn(4); columns.RelativeColumn(0.8f);
+                columns.RelativeColumn(1.2f); columns.RelativeColumn(2); columns.RelativeColumn(1.5f); columns.RelativeColumn(1);
+            });
+            table.Header(header =>
+            {
+                void HC(IContainer c, string text) => c.Border(0.5f).Background("#E0E0E0").Padding(3).AlignCenter().AlignMiddle().Text(text).Bold().FontSize(8);
+                HC(header.Cell(), "STT"); HC(header.Cell(), "Tên mặt hàng"); HC(header.Cell(), "Đvt");
+                HC(header.Cell(), "Số\nlượng"); HC(header.Cell(), "Mục đích sử dụng"); HC(header.Cell(), "Nơi nhận"); HC(header.Cell(), "Mã vật tư");
+            });
+            int stt = 1;
+            foreach (var ct in phieu.ChiTietPhieuXuats)
+            {
+                table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(stt.ToString()).FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).Text(ct.VatTu?.TenVatTu ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).AlignRight().Text(ct.SoLuong.ToString("N2")).FontSize(9);
+                table.Cell().Border(0.5f).Padding(3).Text(phieu.MucDichSuDung).FontSize(8);
+                table.Cell().Border(0.5f).Padding(3).Text(phieu.NoiNhan).FontSize(8);
+                table.Cell().Border(0.5f).Padding(3).AlignCenter().Text(ct.VatTu?.MaVatTu ?? "").FontSize(8);
+                stt++;
+            }
+            table.Cell().ColumnSpan(3).Border(0.5f).Padding(3).AlignRight().Text("Tổng cộng:").Bold().FontSize(9);
+            table.Cell().Border(0.5f).Padding(3).AlignRight().Text(phieu.ChiTietPhieuXuats.Sum(c => c.SoLuong).ToString("N2")).Bold().FontSize(9);
+            table.Cell().ColumnSpan(3).Border(0.5f).Padding(3).Text("").FontSize(8);
+        });
+        col.Item().Height(15);
+        col.Item().Row(row =>
+        {
+            void SignBlock(IContainer c, string title) { c.AlignCenter().Column(sc => { sc.Item().AlignCenter().Text(title).Bold().FontSize(9); sc.Item().AlignCenter().Text("(ký ,họ tên)").Italic().FontSize(7); sc.Item().Height(50); }); }
+            row.RelativeItem().Element(c => SignBlock(c, "Thủ kho"));
+            row.RelativeItem().Element(c => SignBlock(c, "Người nhận hàng"));
+            row.RelativeItem().Element(c => SignBlock(c, "Kế toán"));
+            row.RelativeItem().Element(c => SignBlock(c, "Giám đốc"));
+        });
     }
 
     public Task ExportDeNghiCapVatTu(DeNghiCapVatTu phieu, string filePath)
@@ -273,191 +194,113 @@ public class PdfExportService : IPdfExportService
                 page.MarginHorizontal(1.2f, Unit.Centimetre);
                 page.MarginVertical(1f, Unit.Centimetre);
                 page.DefaultTextStyle(x => x.FontSize(10));
-
-                page.Content().Column(col =>
-                {
-                    // === HEADER ===
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem().Column(left =>
-                        {
-                            left.Item().AlignCenter().Text("CÔNG TY CP TẬP ĐOÀN").Bold().FontSize(11);
-                            left.Item().AlignCenter().Text("SÔNG HỒNG THỦ ĐÔ").Bold().FontSize(11);
-                        });
-                        row.RelativeItem().Column(right =>
-                        {
-                            right.Item().AlignCenter().Text("CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM").Bold().FontSize(11);
-                            right.Item().AlignCenter().Text("Độc lập - Tự do - Hạnh phúc").FontSize(10).Underline();
-                        });
-                    });
-
-                    col.Item().Height(6);
-                    col.Item().AlignRight().PaddingRight(30)
-                        .Text($"......, ngày {phieu.NgayDeNghi:dd} tháng {phieu.NgayDeNghi:MM} năm {phieu.NgayDeNghi:yyyy}")
-                        .Italic().FontSize(10);
-
-                    col.Item().Height(15);
-
-                    // === TITLE ===
-                    col.Item().AlignCenter().Text("GIẤY ĐỀ NGHỊ CẤP VẬT TƯ").Bold().FontSize(18);
-
-                    col.Item().Height(15);
-
-                    // === INFO ===
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem(1).Text(t =>
-                        {
-                            t.Span("Họ tên: ").FontSize(10);
-                            t.Span(phieu.NguoiDeNghi).FontSize(10);
-                        });
-                        row.RelativeItem(1).Text(t =>
-                        {
-                            t.Span("Chức vụ: ").FontSize(10);
-                            t.Span(phieu.ChucVu).FontSize(10);
-                        });
-                    });
-
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem(1).Text(t =>
-                        {
-                            t.Span("Bộ phận: ").FontSize(10);
-                            t.Span(phieu.BoPhan?.TenBoPhan ?? "").FontSize(10);
-                        });
-                        row.RelativeItem(1).Text(t =>
-                        {
-                            t.Span("Số điện thoại: ").FontSize(10);
-                        });
-                    });
-
-                    col.Item().Height(4);
-                    col.Item().Text("Xin cấp các loại vật tư sau:").FontSize(10);
-
-                    col.Item().Height(8);
-
-                    // === TABLE ===
-                    col.Item().Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.ConstantColumn(28);   // STT
-                            columns.RelativeColumn(3.5f); // Tên vật tư
-                            columns.RelativeColumn(0.8f); // ĐVT
-                            columns.RelativeColumn(0.9f); // SL tồn kho
-                            columns.RelativeColumn(0.9f); // SL đề nghị
-                            columns.RelativeColumn(0.9f); // SL được duyệt
-                            columns.RelativeColumn(1.2f); // Ghi chú
-                        });
-
-                        table.Header(header =>
-                        {
-                            void HC(IContainer c, string text) =>
-                                c.Border(0.5f).Background("#F3F4F6").Padding(4).AlignCenter().AlignMiddle()
-                                 .Text(text).Bold().FontSize(9);
-
-                            HC(header.Cell(), "STT");
-                            HC(header.Cell(), "Tên vật tư (Quy cách, mẫu\nmã, thông số kỹ thuật...)");
-                            HC(header.Cell(), "ĐVT");
-                            HC(header.Cell(), "SL\ntồn\nkho");
-                            HC(header.Cell(), "SL\nđề\nnghị");
-                            HC(header.Cell(), "SL\nđược\nduyệt");
-                            HC(header.Cell(), "Ghi\nchú");
-                        });
-
-                        int stt = 1;
-                        foreach (var ct in phieu.ChiTietDeNghis)
-                        {
-                            table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(stt.ToString()).FontSize(9);
-                            table.Cell().Border(0.5f).Padding(4).Text(ct.VatTu?.TenVatTu ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(4).AlignCenter().Text("").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(ct.SoLuongYeuCau.ToString("N0")).FontSize(9);
-                            table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(ct.SoLuongDaCap > 0 ? ct.SoLuongDaCap.ToString("N0") : "").FontSize(9);
-                            table.Cell().Border(0.5f).Padding(4).Text(ct.GhiChu).FontSize(9);
-                            stt++;
-                        }
-
-                        // Empty rows
-                        for (int i = 0; i < 2; i++)
-                        {
-                            table.Cell().Border(0.5f).Padding(4).Height(22).Text("");
-                            table.Cell().Border(0.5f).Padding(4).Text("");
-                            table.Cell().Border(0.5f).Padding(4).Text("");
-                            table.Cell().Border(0.5f).Padding(4).Text("");
-                            table.Cell().Border(0.5f).Padding(4).Text("");
-                            table.Cell().Border(0.5f).Padding(4).Text("");
-                            table.Cell().Border(0.5f).Padding(4).Text("");
-                        }
-                    });
-
-                    col.Item().Height(8);
-
-                    // === FOOTER ===
-                    var totalItems = phieu.ChiTietDeNghis.Count;
-                    col.Item().Text($"(Tổng: {totalItems:D2} loại. Để sử dụng: {phieu.GhiChu})").Italic().FontSize(9);
-
-                    col.Item().Height(20);
-
-                    // === SIGNATURES ===
-                    col.Item().Row(row =>
-                    {
-                        void SignBlock(IContainer c, string title)
-                        {
-                            c.AlignCenter().Column(sc =>
-                            {
-                                sc.Item().AlignCenter().Text(title).Bold().FontSize(10);
-                                sc.Item().Height(60);
-                            });
-                        }
-                        row.RelativeItem().Element(c => SignBlock(c, "Người duyệt"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Phòng TC-HC"));
-                        row.RelativeItem().Element(c => SignBlock(c, "CB phụ trách"));
-                        row.RelativeItem().Element(c => SignBlock(c, "Người đề nghị"));
-                    });
-                });
+                page.Content().Column(col => RenderDeNghiCapVatTuContent(col, phieu));
             });
         }).GeneratePdf(filePath);
-
         return Task.CompletedTask;
+    }
+
+    private void RenderDeNghiCapVatTuContent(ColumnDescriptor col, DeNghiCapVatTu phieu)
+    {
+        col.Item().Row(row =>
+        {
+            row.RelativeItem().Column(left => { left.Item().AlignCenter().Text("CÔNG TY CP TẬP ĐOÀN").Bold().FontSize(11); left.Item().AlignCenter().Text("SÔNG HỒNG THỦ ĐÔ").Bold().FontSize(11); });
+            row.RelativeItem().Column(right => { right.Item().AlignCenter().Text("CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM").Bold().FontSize(11); right.Item().AlignCenter().Text("Độc lập - Tự do - Hạnh phúc").FontSize(10).Underline(); });
+        });
+        col.Item().Height(6);
+        col.Item().AlignRight().PaddingRight(30).Text($"......, ngày {phieu.NgayDeNghi:dd} tháng {phieu.NgayDeNghi:MM} năm {phieu.NgayDeNghi:yyyy}").Italic().FontSize(10);
+        col.Item().Height(15);
+        col.Item().AlignCenter().Text("GIẤY ĐỀ NGHỊ CẤP VẬT TƯ").Bold().FontSize(18);
+        col.Item().Height(15);
+        col.Item().Row(row =>
+        {
+            row.RelativeItem(1).Text(t => { t.Span("Họ tên: ").FontSize(10); t.Span(phieu.NguoiDeNghi).FontSize(10); });
+            row.RelativeItem(1).Text(t => { t.Span("Chức vụ: ").FontSize(10); t.Span(phieu.ChucVu).FontSize(10); });
+        });
+        col.Item().Row(row =>
+        {
+            row.RelativeItem(1).Text(t => { t.Span("Bộ phận: ").FontSize(10); t.Span(phieu.BoPhan?.TenBoPhan ?? "").FontSize(10); });
+            row.RelativeItem(1).Text(t => { t.Span("Số điện thoại: ").FontSize(10); });
+        });
+        col.Item().Height(4);
+        col.Item().Text("Xin cấp các loại vật tư sau:").FontSize(10);
+        col.Item().Height(8);
+        col.Item().Table(table =>
+        {
+            table.ColumnsDefinition(columns =>
+            {
+                columns.ConstantColumn(28); columns.RelativeColumn(3.5f); columns.RelativeColumn(0.8f);
+                columns.RelativeColumn(0.9f); columns.RelativeColumn(0.9f); columns.RelativeColumn(0.9f); columns.RelativeColumn(1.2f);
+            });
+            table.Header(header =>
+            {
+                void HC(IContainer c, string text) => c.Border(0.5f).Background("#F3F4F6").Padding(4).AlignCenter().AlignMiddle().Text(text).Bold().FontSize(9);
+                HC(header.Cell(), "STT"); HC(header.Cell(), "Tên vật tư (Quy cách, mẫu\nmã, thông số kỹ thuật...)");
+                HC(header.Cell(), "ĐVT"); HC(header.Cell(), "SL\ntồn\nkho"); HC(header.Cell(), "SL\nđề\nnghị"); HC(header.Cell(), "SL\nđược\nduyệt"); HC(header.Cell(), "Ghi\nchú");
+            });
+            int stt = 1;
+            foreach (var ct in phieu.ChiTietDeNghis)
+            {
+                table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(stt.ToString()).FontSize(9);
+                table.Cell().Border(0.5f).Padding(4).Text(ct.VatTu?.TenVatTu ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(ct.VatTu?.DonViTinh?.TenDonVi ?? "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(4).AlignCenter().Text("").FontSize(9);
+                table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(ct.SoLuongYeuCau.ToString("N0")).FontSize(9);
+                table.Cell().Border(0.5f).Padding(4).AlignCenter().Text(ct.SoLuongDaCap > 0 ? ct.SoLuongDaCap.ToString("N0") : "").FontSize(9);
+                table.Cell().Border(0.5f).Padding(4).Text(ct.GhiChu).FontSize(9);
+                stt++;
+            }
+            for (int i = 0; i < 2; i++) { for (int j = 0; j < 7; j++) table.Cell().Border(0.5f).Padding(4).Height(j == 0 ? 22 : 0).Text(""); }
+        });
+        col.Item().Height(8);
+        col.Item().Text($"(Tổng: {phieu.ChiTietDeNghis.Count:D2} loại. Để sử dụng: {phieu.GhiChu})").Italic().FontSize(9);
+        col.Item().Height(20);
+        col.Item().Row(row =>
+        {
+            void SignBlock(IContainer c, string title) { c.AlignCenter().Column(sc => { sc.Item().AlignCenter().Text(title).Bold().FontSize(10); sc.Item().Height(60); }); }
+            row.RelativeItem().Element(c => SignBlock(c, "Người duyệt"));
+            row.RelativeItem().Element(c => SignBlock(c, "Phòng TC-HC"));
+            row.RelativeItem().Element(c => SignBlock(c, "CB phụ trách"));
+            row.RelativeItem().Element(c => SignBlock(c, "Người đề nghị"));
+        });
     }
 
     public async Task ExportNhapXuatTonKho(AppDbContext context, string filePath, int khoId, int month, int year)
     {
-        var kho = await context.Khos.FindAsync(khoId);
+        var khos = khoId > 0
+            ? new List<Kho> { (await context.Khos.FindAsync(khoId))! }
+            : await context.Khos.ToListAsync();
         var startOfMonth = new DateTime(year, month, 1);
         var endOfMonth = startOfMonth.AddMonths(1);
-
         var vatTus = await context.VatTus.Include(v => v.DonViTinh).OrderBy(v => v.MaVatTu).ToListAsync();
 
-        var rows = new List<(string MaVT, string TenVT, string DVT, decimal TonDau, decimal Nhap, decimal Xuat, decimal TonCK)>();
+        var rows = new List<(string MaVT, string TenVT, string DVT, decimal TonDau, decimal Nhap, decimal Xuat, decimal TonCK, string Kho)>();
 
-        foreach (var vt in vatTus)
+        foreach (var kho in khos)
         {
-            // Tồn đầu = tổng nhập trước tháng - tổng xuất trước tháng
-            var nhapTruoc = await context.ChiTietPhieuNhaps
-                .Where(ct => ct.VatTuId == vt.Id && ct.PhieuNhapKho.KhoId == khoId && ct.PhieuNhapKho.NgayNhap < startOfMonth)
-                .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
-            var xuatTruoc = await context.ChiTietPhieuXuats
-                .Where(ct => ct.VatTuId == vt.Id && ct.PhieuXuatKho.KhoId == khoId && ct.PhieuXuatKho.NgayXuat < startOfMonth)
-                .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
-            var tonDau = nhapTruoc - xuatTruoc;
+            foreach (var vt in vatTus)
+            {
+                var nhapTruoc = await context.ChiTietPhieuNhaps
+                    .Where(ct => ct.VatTuId == vt.Id && ct.PhieuNhapKho.KhoId == kho.Id && ct.PhieuNhapKho.NgayNhap < startOfMonth)
+                    .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
+                var xuatTruoc = await context.ChiTietPhieuXuats
+                    .Where(ct => ct.VatTuId == vt.Id && ct.PhieuXuatKho.KhoId == kho.Id && ct.PhieuXuatKho.NgayXuat < startOfMonth)
+                    .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
+                var tonDau = nhapTruoc - xuatTruoc;
 
-            // Nhập trong tháng
-            var nhapThang = await context.ChiTietPhieuNhaps
-                .Where(ct => ct.VatTuId == vt.Id && ct.PhieuNhapKho.KhoId == khoId
-                    && ct.PhieuNhapKho.NgayNhap >= startOfMonth && ct.PhieuNhapKho.NgayNhap < endOfMonth)
-                .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
+                var nhapThang = await context.ChiTietPhieuNhaps
+                    .Where(ct => ct.VatTuId == vt.Id && ct.PhieuNhapKho.KhoId == kho.Id
+                        && ct.PhieuNhapKho.NgayNhap >= startOfMonth && ct.PhieuNhapKho.NgayNhap < endOfMonth)
+                    .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
+                var xuatThang = await context.ChiTietPhieuXuats
+                    .Where(ct => ct.VatTuId == vt.Id && ct.PhieuXuatKho.KhoId == kho.Id
+                        && ct.PhieuXuatKho.NgayXuat >= startOfMonth && ct.PhieuXuatKho.NgayXuat < endOfMonth)
+                    .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
+                var tonCK = tonDau + nhapThang - xuatThang;
 
-            // Xuất trong tháng
-            var xuatThang = await context.ChiTietPhieuXuats
-                .Where(ct => ct.VatTuId == vt.Id && ct.PhieuXuatKho.KhoId == khoId
-                    && ct.PhieuXuatKho.NgayXuat >= startOfMonth && ct.PhieuXuatKho.NgayXuat < endOfMonth)
-                .SumAsync(ct => (decimal?)ct.SoLuong) ?? 0;
-
-            var tonCK = tonDau + nhapThang - xuatThang;
-
-            rows.Add((vt.MaVatTu, vt.TenVatTu, vt.DonViTinh?.TenDonVi ?? "", tonDau, nhapThang, xuatThang, tonCK));
+                if (nhapThang > 0 || xuatThang > 0 || tonDau != 0)
+                    rows.Add((vt.MaVatTu, vt.TenVatTu, vt.DonViTinh?.TenDonVi ?? "", tonDau, nhapThang, xuatThang, tonCK, kho.TenKho));
+            }
         }
 
         Document.Create(container =>
@@ -471,8 +314,13 @@ public class PdfExportService : IPdfExportService
 
                 page.Content().Column(col =>
                 {
+                    // Header công ty
+                    col.Item().AlignCenter().Text(CompanyName).Bold().FontSize(11);
+                    col.Item().AlignCenter().Text("Khu đô thị Bắc Đầm Vạc").Italic().FontSize(9);
+                    col.Item().Height(10);
+
                     col.Item().AlignCenter().Text($"NHẬP XUẤT TỒN KHO THÁNG {month}/{year}").Bold().FontSize(16);
-                    col.Item().AlignCenter().Text($"Kho: {kho?.TenKho ?? ""}").FontSize(11);
+                    col.Item().AlignCenter().Text($"Kho: {(khoId > 0 ? khos[0].TenKho : "Tất cả")}").FontSize(11);
                     col.Item().Height(10);
 
                     col.Item().Table(table =>
@@ -481,32 +329,40 @@ public class PdfExportService : IPdfExportService
                         {
                             columns.ConstantColumn(30);   // STT
                             columns.RelativeColumn(1);    // Mã VT
-                            columns.RelativeColumn(3);    // Tên VT
+                            columns.RelativeColumn(3);    // Tên vật tư
                             columns.RelativeColumn(0.7f); // ĐVT
-                            columns.RelativeColumn(1);    // Tồn đầu
-                            columns.RelativeColumn(1);    // Nhập
-                            columns.RelativeColumn(1);    // Xuất
-                            columns.RelativeColumn(1);    // Tồn CK
-                            columns.RelativeColumn(1);    // Tồn TT
-                            columns.RelativeColumn(1);    // Chênh lệch
+                            columns.RelativeColumn(1);    // Tồn đầu kỳ
+                            columns.RelativeColumn(1);    // Nhập trong kỳ
+                            columns.RelativeColumn(1);    // Xuất trong kỳ
+                            columns.RelativeColumn(1);    // Tồn cuối kỳ
+                            columns.RelativeColumn(1.2f); // Kho
                         });
 
+                        // Dòng TỔNG CỘNG
                         table.Header(header =>
                         {
                             void HC(IContainer c, string text) =>
                                 c.Border(0.5f).Background("#E0E0E0").Padding(3).AlignCenter().AlignMiddle()
                                  .Text(text).Bold().FontSize(9);
 
+                            // Tổng cộng row
+                            header.Cell().ColumnSpan(4).Border(0.5f).Background("#E8F0FE").Padding(3).AlignRight().Text("TỔNG CỘNG").Bold().FontSize(9);
+                            header.Cell().Border(0.5f).Background("#E8F0FE").Padding(3).AlignRight().Text(rows.Sum(r => r.TonDau).ToString("N2")).Bold().FontSize(9);
+                            header.Cell().Border(0.5f).Background("#E8F0FE").Padding(3).AlignRight().Text(rows.Sum(r => r.Nhap).ToString("N2")).Bold().FontSize(9).FontColor("#16A34A");
+                            header.Cell().Border(0.5f).Background("#E8F0FE").Padding(3).AlignRight().Text(rows.Sum(r => r.Xuat).ToString("N2")).Bold().FontSize(9).FontColor("#DC2626");
+                            header.Cell().Border(0.5f).Background("#E8F0FE").Padding(3).AlignRight().Text(rows.Sum(r => r.TonCK).ToString("N2")).Bold().FontSize(9).FontColor("#2563EB");
+                            header.Cell().Border(0.5f).Background("#E8F0FE").Padding(3).Text("").FontSize(9);
+
+                            // Header row
                             HC(header.Cell(), "STT");
-                            HC(header.Cell(), "Mã\nvật tư");
+                            HC(header.Cell(), "Mã VT");
                             HC(header.Cell(), "Tên vật tư");
                             HC(header.Cell(), "ĐVT");
-                            HC(header.Cell(), "Tồn\nđầu");
-                            HC(header.Cell(), "Nhập");
-                            HC(header.Cell(), "Xuất");
-                            HC(header.Cell(), "Tồn\nCK");
-                            HC(header.Cell(), "Tồn\nTT");
-                            HC(header.Cell(), "Chênh\nlệch");
+                            HC(header.Cell(), "Tồn đầu kỳ");
+                            HC(header.Cell(), "Nhập trong kỳ");
+                            HC(header.Cell(), "Xuất trong kỳ");
+                            HC(header.Cell(), "Tồn cuối kỳ");
+                            HC(header.Cell(), "Kho");
                         });
 
                         int stt = 1;
@@ -516,12 +372,11 @@ public class PdfExportService : IPdfExportService
                             table.Cell().Border(0.5f).Padding(2).AlignCenter().Text(r.MaVT);
                             table.Cell().Border(0.5f).Padding(2).Text(r.TenVT);
                             table.Cell().Border(0.5f).Padding(2).AlignCenter().Text(r.DVT);
-                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.TonDau.ToString("N0"));
-                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.Nhap.ToString("N0"));
-                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.Xuat.ToString("N0"));
-                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.TonCK.ToString("N0"));
-                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(""); // Tồn TT - để trống
-                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(""); // Chênh lệch
+                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.TonDau.ToString("N2"));
+                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.Nhap.ToString("N2"));
+                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.Xuat.ToString("N2"));
+                            table.Cell().Border(0.5f).Padding(2).AlignRight().Text(r.TonCK.ToString("N2"));
+                            table.Cell().Border(0.5f).Padding(2).Text(r.Kho);
                             stt++;
                         }
                     });
@@ -747,5 +602,64 @@ public class PdfExportService : IPdfExportService
                 });
             });
         }).GeneratePdf(filePath);
+    }
+
+    // ===== BATCH EXPORT - Gộp nhiều phiếu vào 1 file PDF (mỗi phiếu 1 trang) =====
+
+    public Task ExportMultiPhieuNhapKho(List<PhieuNhapKho> phieus, string filePath)
+    {
+        Document.Create(container =>
+        {
+            foreach (var phieu in phieus)
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.MarginHorizontal(1.5f, Unit.Centimetre);
+                    page.MarginVertical(1.2f, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+                    page.Content().Column(col => RenderPhieuNhapKhoContent(col, phieu));
+                });
+            }
+        }).GeneratePdf(filePath);
+        return Task.CompletedTask;
+    }
+
+    public Task ExportMultiPhieuXuatKho(List<PhieuXuatKho> phieus, string filePath)
+    {
+        Document.Create(container =>
+        {
+            foreach (var phieu in phieus)
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.MarginHorizontal(1.5f, Unit.Centimetre);
+                    page.MarginVertical(1.2f, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+                    page.Content().Column(col => RenderPhieuXuatKhoContent(col, phieu));
+                });
+            }
+        }).GeneratePdf(filePath);
+        return Task.CompletedTask;
+    }
+
+    public Task ExportMultiDeNghiCapVatTu(List<DeNghiCapVatTu> phieus, string filePath)
+    {
+        Document.Create(container =>
+        {
+            foreach (var phieu in phieus)
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.MarginHorizontal(1.2f, Unit.Centimetre);
+                    page.MarginVertical(1f, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+                    page.Content().Column(col => RenderDeNghiCapVatTuContent(col, phieu));
+                });
+            }
+        }).GeneratePdf(filePath);
+        return Task.CompletedTask;
     }
 }

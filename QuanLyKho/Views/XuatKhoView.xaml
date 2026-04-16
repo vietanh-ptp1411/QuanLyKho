@@ -9,15 +9,21 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Text="XUẤT KHO" Style="{StaticResource PageTitleRed}"/>
 
-            <!-- Filters -->
+            <!-- Filters + Tạo phiếu -->
             <WrapPanel Grid.Row="1" Margin="0,0,0,8">
+                <Button Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Tạo phiếu xuất"/>
+                    </StackPanel>
+                </Button>
                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=300}"
                          Width="220" materialDesign:HintAssist.Hint="Tìm số phiếu, người nhận..."
                          Style="{StaticResource FilterTextBox}"
@@ -34,39 +40,28 @@
                 </Button>
             </WrapPanel>
 
-            <!-- Nút hành động -->
-            <WrapPanel Grid.Row="2" Margin="0,0,0,12">
-                <Button Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Tạo phiếu xuất"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="In"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="FilePdfBox" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Xuất PDF"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource BtnExcel}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="MicrosoftExcel" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Xuất Excel"/>
-                    </StackPanel>
-                </Button>
-            </WrapPanel>
-
-            <DataGrid Grid.Row="3" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedPhieu}"
+            <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSach}" SelectedItem="{Binding SelectedPhieu}"
                       AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
                       FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
                       Style="{StaticResource MaterialDesignDataGrid}">
                 <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="100">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="All" VerticalAlignment="Center" Margin="0,0,6,0" FontWeight="Bold"/>
+                                    <CheckBox IsChecked="{Binding DataContext.IsAllSelected, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="STT" Width="55"
                                         Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},
                                         Converter={StaticResource IndexConverter}}">
@@ -81,8 +76,6 @@
                     <DataGridTextColumn Header="Người nhận" Binding="{Binding NguoiNhan}" Width="*"/>
                     <DataGridTextColumn Header="Kho" Binding="{Binding Kho.TenKho}" Width="130"/>
                     <DataGridTextColumn Header="Bộ phận" Binding="{Binding BoPhan.TenBoPhan}" Width="130"/>
-                    <DataGridTextColumn Header="Mục đích sử dụng" Binding="{Binding MucDichSuDung}" Width="160"/>
-                    <DataGridTextColumn Header="Nơi nhận" Binding="{Binding NoiNhan}" Width="140"/>
                     <DataGridTemplateColumn Header="Thao tác" Width="165">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -111,7 +104,7 @@
             </DataGrid>
 
             <!-- Phân trang -->
-            <Border Grid.Row="4" Background="White" BorderBrush="#E2E8F0" BorderThickness="1,0,1,1"
+            <Border Grid.Row="3" Background="White" BorderBrush="#E2E8F0" BorderThickness="1,0,1,1"
                     CornerRadius="0,0,8,8" Padding="12,8">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="13" Foreground="#64748B">
@@ -143,47 +136,61 @@
                     </StackPanel>
                 </DockPanel>
             </Border>
+
+            <!-- Nút hành động -->
+            <WrapPanel Grid.Row="4" Margin="0,10,0,0">
+                <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="In"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FilePdfBox" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xuất PDF"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource BtnExcel}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="MicrosoftExcel" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xuất Excel"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
         </Grid>
 
-        <!-- Edit Form -->
+        <!-- Edit Form - Paper Style -->
         <ScrollViewer Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}"
-                      VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,0,10,0">
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Toolbar -->
                 <DockPanel Margin="0,0,0,10">
-                    <TextBlock Text="Phiếu xuất kho" Style="{StaticResource PageTitle}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                        <TextBlock Text="Số phiếu:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBlock Text="{Binding EditSoPhieu}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,15,0"/>
+
+                        <TextBlock Text="Ngày:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <DatePicker SelectedDate="{Binding EditNgayXuat}" Width="130" Margin="0,0,15,0"
+                                    Style="{StaticResource FormDatePicker}"/>
+
+                        <TextBlock Text="Kho xuất *:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <ComboBox ItemsSource="{Binding Khos}" SelectedItem="{Binding EditKho}"
+                                  DisplayMemberPath="TenKho" Width="160" Margin="0,0,15,0"
+                                  Style="{StaticResource FormComboBox}"/>
+
+                        <TextBlock Text="Bộ phận:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <ComboBox ItemsSource="{Binding BoPhans}" SelectedItem="{Binding EditBoPhan}"
+                                  DisplayMemberPath="TenBoPhan" Width="150" Margin="0,0,10,0"
+                                  Style="{StaticResource FormComboBox}"
+                                  materialDesign:TextFieldAssist.HasClearButton="True"/>
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0"
-                                Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="In"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0"
-                                Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="FilePdfBox" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="Xuất PDF"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding ExportExcelCommand}" Margin="0,0,10,0"
-                                Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                                    <Setter Property="Background" Value="#16A34A"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                    <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
-                                    <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp0"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="Height" Value="38"/>
-                                    <Setter Property="Padding" Value="16,0"/>
-                                </Style>
-                            </Button.Style>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="MicrosoftExcel" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="Xuất Excel"/>
-                            </StackPanel>
-                        </Button>
                         <Button Command="{Binding SaveCommand}" Style="{StaticResource BtnSave}" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,6,0"/>
@@ -194,162 +201,285 @@
                     </StackPanel>
                 </DockPanel>
 
-                <!-- Error -->
-                <Border Background="#FEE2E2" CornerRadius="8" Padding="12,8" Margin="0,0,0,8"
-                        Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#DC2626" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                </Border>
+                <!-- Paper Form -->
+                <Border Grid.Row="1" Background="White" BorderBrush="#CCCCCC" BorderThickness="1"
+                        Padding="40,30" MaxWidth="950" HorizontalAlignment="Center">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15"/>
+                    </Border.Effect>
 
-                <materialDesign:Card Padding="16" Margin="0,0,0,10">
-                    <WrapPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Số phiếu" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding EditSoPhieu}" IsReadOnly="True" Width="180"
-                                     Style="{StaticResource FormTextBox}" Background="#F0F0F0"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Ngày xuất" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <DatePicker SelectedDate="{Binding EditNgayXuat}" Width="150"
-                                        Style="{StaticResource FormDatePicker}"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Kho xuất *" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding Khos}" SelectedItem="{Binding EditKho}"
-                                      DisplayMemberPath="TenKho" Width="180"
-                                      Style="{StaticResource FormComboBox}"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Người nhận" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding EditNguoiNhan, UpdateSourceTrigger=PropertyChanged}" Width="180"
-                                     Style="{StaticResource FormTextBox}"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Bộ phận" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding BoPhans}" SelectedItem="{Binding EditBoPhan}"
-                                      DisplayMemberPath="TenBoPhan" Width="180"
-                                      Style="{StaticResource FormComboBox}"
-                                      materialDesign:TextFieldAssist.HasClearButton="True"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Mục đích sử dụng" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding EditMucDichSuDung, UpdateSourceTrigger=PropertyChanged}" Width="200"
-                                     Style="{StaticResource FormTextBox}"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Nơi nhận" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding EditNoiNhan, UpdateSourceTrigger=PropertyChanged}" Width="200"
-                                     Style="{StaticResource FormTextBox}"/>
-                        </StackPanel>
-                    </WrapPanel>
-                </materialDesign:Card>
-
-                <TextBlock Text="Chi tiết vật tư xuất" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,6"/>
-
-                <DataGrid ItemsSource="{Binding ChiTietRows}" AutoGenerateColumns="False"
-                          CanUserAddRows="False" FontSize="13" RowHeight="40" ColumnHeaderHeight="38"
-                          Style="{StaticResource MaterialDesignDataGrid}" Margin="0,0,0,0">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Số phiếu xuất"
-                                            Binding="{Binding DataContext.EditSoPhieu, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
-                                            Width="120" IsReadOnly="True"/>
-                        <DataGridTemplateColumn Header="Tên mặt hàng" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding DataContext.VatTus, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                              SelectedItem="{Binding VatTu, UpdateSourceTrigger=PropertyChanged}"
-                                              DisplayMemberPath="TenVatTu" IsEditable="True"
-                                              helpers:AutoCompleteBehavior.IsEnabled="True"
-                                              BorderThickness="0" Background="Transparent" Padding="4,2"
-                                              materialDesign:HintAssist.Hint="-- Gõ để tìm vật tư --"
-                                              materialDesign:HintAssist.IsFloating="False"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="ĐVT" Binding="{Binding VatTu.DonViTinh.TenDonVi, Mode=OneWay}" Width="70" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                        <DataGridTextColumn Header="Mục đích sử dụng"
-                                            Binding="{Binding DataContext.EditMucDichSuDung, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
-                                            Width="160" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Nơi nhận"
-                                            Binding="{Binding DataContext.EditNoiNhan, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
-                                            Width="140" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Mã vật tư" Binding="{Binding VatTu.MaVatTu, Mode=OneWay}" Width="100" IsReadOnly="True"/>
-                        <DataGridTemplateColumn Header="" Width="60">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}" Content="Xóa"
-                                            Foreground="#DC2626" FontSize="12"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                            Padding="4,2" Height="28" MinWidth="0"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <!-- Tổng số lượng (căn thẳng cột Số lượng) -->
-                <Grid Background="#F8FAFC" Margin="0,0,0,8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="70"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="160"/>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="60"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="Tổng số lượng:"
-                               HorizontalAlignment="Right" VerticalAlignment="Center"
-                               FontWeight="SemiBold" FontSize="13" Padding="8,6"/>
-                    <TextBlock Grid.Column="3" Text="{Binding TongSoLuong, StringFormat=N2, Mode=OneWay}"
-                               HorizontalAlignment="Right" VerticalAlignment="Center"
-                               FontWeight="SemiBold" FontSize="13" Foreground="#DC2626" Padding="8,6"/>
-                </Grid>
-
-                <Button Command="{Binding AddRowCommand}" HorizontalAlignment="Stretch" Height="38"
-                        BorderBrush="#CCCCCC" BorderThickness="1" Background="White" Cursor="Hand"
-                        Margin="0,0,0,8">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </Button.Style>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" VerticalAlignment="Center" Foreground="#555"/>
-                        <TextBlock Text="  Thêm dòng mới" Foreground="#555" FontSize="13" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-                <materialDesign:Card Padding="16" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="Người ký" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                        <WrapPanel>
-                            <StackPanel Margin="0,0,12,6">
-                                <TextBlock Text="Người lập phiếu" Margin="0,0,0,4" FontSize="12" Foreground="Gray"/>
-                                <TextBox Text="{Binding EditNguoiLapPhieu, UpdateSourceTrigger=PropertyChanged}" Width="180"
-                                         Style="{StaticResource FormTextBox}"/>
+                        <!-- Header -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left - Company -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="CÔNG TY CỔ PHẦN TẬP ĐOÀN SÔNG HỒNG THỦ ĐÔ"
+                                           FontWeight="Bold" FontSize="11"/>
+                                <TextBlock Text="Khu đô thị Bắc Đầm Vạc" FontStyle="Italic" FontSize="10"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Kho: " FontSize="10"/>
+                                    <TextBlock Text="{Binding EditKho.TenKho}" FontSize="10"/>
+                                </StackPanel>
                             </StackPanel>
-                            <StackPanel Margin="0,0,12,6">
-                                <TextBlock Text="Thủ kho" Margin="0,0,0,4" FontSize="12" Foreground="Gray"/>
-                                <TextBox Text="{Binding EditThuKho, UpdateSourceTrigger=PropertyChanged}" Width="180"
-                                         Style="{StaticResource FormTextBox}"/>
+
+                            <!-- Right -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBlock Text="SÔNG HỒNG THỦ ĐÔ" FontWeight="Bold" FontSize="12"
+                                           HorizontalAlignment="Right"/>
                             </StackPanel>
-                            <StackPanel Margin="0,0,12,6">
-                                <TextBlock Text="Kế toán trưởng" Margin="0,0,0,4" FontSize="12" Foreground="Gray"/>
-                                <TextBox Text="{Binding EditKeToanTruong, UpdateSourceTrigger=PropertyChanged}" Width="180"
-                                         Style="{StaticResource FormTextBox}"/>
+                        </Grid>
+
+                        <!-- Title -->
+                        <TextBlock Text="PHIẾU XUẤT KHO KINH DOANH SHTD" FontWeight="Bold" FontSize="17"
+                                   HorizontalAlignment="Center" Margin="0,10,0,5"/>
+
+                        <!-- Số phiếu -->
+                        <TextBlock HorizontalAlignment="Center" FontSize="11" Margin="0,0,0,15">
+                            <Run Text="Số phiếu xuất: "/>
+                            <Run Text="{Binding EditSoPhieu, Mode=OneWay}"/>
+                        </TextBlock>
+
+                        <!-- Info Section - 2 columns -->
+                        <Grid Margin="0,0,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock Text="Họ tên người xin cấp vật tư : " FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding EditNguoiNhan, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="200" FontSize="13" BorderThickness="0,0,0,1" BorderBrush="#999"
+                                             Padding="5,3" Background="Transparent"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock Text="Bộ Phận: " FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding EditBoPhan.TenBoPhan}" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock Text="Nơi nhận: " FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding EditNoiNhan, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="250" FontSize="13" BorderThickness="0,0,0,1" BorderBrush="#999"
+                                             Padding="5,3" Background="Transparent"/>
+                                </StackPanel>
                             </StackPanel>
-                            <StackPanel Margin="0,0,0,6">
-                                <TextBlock Text="Giám đốc" Margin="0,0,0,4" FontSize="12" Foreground="Gray"/>
-                                <TextBox Text="{Binding EditGiamDoc, UpdateSourceTrigger=PropertyChanged}" Width="180"
-                                         Style="{StaticResource FormTextBox}"/>
+
+                            <StackPanel Grid.Column="1">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock Text="Ngày tháng xuất: " FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBlock FontSize="13" VerticalAlignment="Center">
+                                        <TextBlock.Text>
+                                            <Binding Path="EditNgayXuat" StringFormat="dd/MM/yyyy"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock Text="Mục đích sử dụng: " FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding EditMucDichSuDung, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="200" FontSize="13" BorderThickness="0,0,0,1" BorderBrush="#999"
+                                             Padding="5,3" Background="Transparent"/>
+                                </StackPanel>
                             </StackPanel>
-                        </WrapPanel>
+                        </Grid>
+
+                        <!-- Data Table -->
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="0,10,0,5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Table Header -->
+                                <Grid Background="#E0E0E0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="45"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
+                                        <TextBlock Text="STT" FontWeight="Bold" FontSize="11"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
+                                        <TextBlock Text="Tên mặt hàng" FontWeight="Bold" FontSize="11"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="2" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
+                                        <TextBlock Text="Đvt" FontWeight="Bold" FontSize="11"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="3" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
+                                        <TextBlock Text="Số&#x0a;lượng" FontWeight="Bold" FontSize="10"
+                                                   HorizontalAlignment="Center" TextAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="4" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
+                                        <TextBlock Text="Mục đích&#x0a;sử dụng" FontWeight="Bold" FontSize="10"
+                                                   HorizontalAlignment="Center" TextAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="5" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
+                                        <TextBlock Text="Nơi nhận" FontWeight="Bold" FontSize="11"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="6" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
+                                        <TextBlock Text="Mã vật tư" FontWeight="Bold" FontSize="10"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="7" BorderBrush="Black" BorderThickness="0,0,0,1" Padding="3">
+                                        <TextBlock Text="Xóa" FontWeight="Bold" FontSize="10"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Table Data -->
+                                <ItemsControl Grid.Row="1" ItemsSource="{Binding ChiTietRows}" AlternationCount="1000">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="60"/>
+                                                    <ColumnDefinition Width="70"/>
+                                                    <ColumnDefinition Width="130"/>
+                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition Width="45"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
+                                                    <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex),
+                                                               RelativeSource={RelativeSource AncestorType=ContentPresenter},
+                                                               Converter={StaticResource IndexConverter}}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12"/>
+                                                </Border>
+                                                <Border Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="2">
+                                                    <ComboBox ItemsSource="{Binding DataContext.VatTus, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                              SelectedItem="{Binding VatTu, UpdateSourceTrigger=PropertyChanged}"
+                                                              DisplayMemberPath="TenVatTu" IsEditable="True" FontSize="12"
+                                                              helpers:AutoCompleteBehavior.IsEnabled="True"
+                                                              BorderThickness="0" Background="Transparent"
+                                                              materialDesign:HintAssist.Hint="Gõ để tìm vật tư"/>
+                                                </Border>
+                                                <Border Grid.Column="2" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
+                                                    <TextBlock Text="{Binding VatTu.DonViTinh.TenDonVi}" FontSize="12"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border Grid.Column="3" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="2">
+                                                    <TextBox Text="{Binding SoLuong, UpdateSourceTrigger=PropertyChanged}"
+                                                             BorderThickness="0" FontSize="12" TextAlignment="Center"
+                                                             Background="Transparent" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border Grid.Column="4" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
+                                                    <TextBlock Text="{Binding DataContext.EditMucDichSuDung, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                               FontSize="11" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                                </Border>
+                                                <Border Grid.Column="5" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
+                                                    <TextBlock Text="{Binding DataContext.EditNoiNhan, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                               FontSize="11" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                                </Border>
+                                                <Border Grid.Column="6" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
+                                                    <TextBlock Text="{Binding VatTu.MaVatTu}" FontSize="11"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border Grid.Column="7" BorderBrush="Black" BorderThickness="0,0,0,1">
+                                                    <Button Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                            Width="28" Height="28" Padding="0"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Foreground="#DC2626" ToolTip="Xóa dòng">
+                                                        <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"/>
+                                                    </Button>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </Border>
+
+                        <!-- Tổng cộng row -->
+                        <Border BorderBrush="Black" BorderThickness="1,0,1,1" Margin="0,0,0,5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="365"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Tổng cộng:" FontWeight="Bold" FontSize="12"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center" Padding="5"/>
+                                <TextBlock Grid.Column="1" Text="{Binding TongSoLuong, StringFormat=N2, Mode=OneWay}"
+                                           FontWeight="Bold" FontSize="12" Foreground="#DC2626"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Padding="5"/>
+                                <Border Grid.Column="2" Padding="5"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Add Row Button -->
+                        <Button Command="{Binding AddRowCommand}" HorizontalAlignment="Left"
+                                Margin="0,5,0,15" Padding="10,5"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center"/>
+                                <TextBlock Text=" Thêm dòng" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Signature Section -->
+                        <Grid Margin="0,20,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                <TextBlock Text="Thủ kho" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="(ký ,họ tên)" FontStyle="Italic" FontSize="9" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding EditThuKho, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="100" FontSize="10" BorderThickness="0" Background="Transparent"
+                                         TextAlignment="Center" Margin="0,30,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                <TextBlock Text="Người nhận hàng" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="(ký ,họ tên)" FontStyle="Italic" FontSize="9" HorizontalAlignment="Center"/>
+                                <TextBlock Text="" Height="60"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                <TextBlock Text="Kế toán" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="(ký ,họ tên)" FontStyle="Italic" FontSize="9" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding EditKeToanTruong, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="100" FontSize="10" BorderThickness="0" Background="Transparent"
+                                         TextAlignment="Center" Margin="0,30,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                                <TextBlock Text="Giám đốc" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="(ký ,họ tên)" FontStyle="Italic" FontSize="9" HorizontalAlignment="Center"/>
+                                <TextBox Text="{Binding EditGiamDoc, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="100" FontSize="10" BorderThickness="0" Background="Transparent"
+                                         TextAlignment="Center" Margin="0,30,0,0"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
-                </materialDesign:Card>
-            </StackPanel>
+                </Border>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </UserControl>

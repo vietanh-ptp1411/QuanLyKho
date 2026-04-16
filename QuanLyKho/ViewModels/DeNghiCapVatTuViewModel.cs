@@ -13,6 +13,7 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
 {
     private readonly IDbContextFactory<AppDbContext> _contextFactory;
     private readonly IPdfExportService _pdfService;
+    private readonly IExcelExportService _excelService;
 
     [ObservableProperty] private ObservableCollection<DeNghiCapVatTu> _danhSach = new();
     [ObservableProperty] private DeNghiCapVatTu? _selectedPhieu;
@@ -24,6 +25,12 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private int _pageSize = 15;
+    [ObservableProperty] private bool _isAllSelected;
+
+    partial void OnIsAllSelectedChanged(bool value)
+    {
+        foreach (var item in DanhSach) item.IsSelected = value;
+    }
 
     // Form
     [ObservableProperty] private bool _isEditing;
@@ -42,10 +49,11 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
 
     public string[] TrangThaiLabels { get; } = { "Nháp", "Đã duyệt", "Đã cấp", "Từ chối" };
 
-    public DeNghiCapVatTuViewModel(IDbContextFactory<AppDbContext> contextFactory, IPdfExportService pdfService)
+    public DeNghiCapVatTuViewModel(IDbContextFactory<AppDbContext> contextFactory, IPdfExportService pdfService, IExcelExportService excelService)
     {
         _contextFactory = contextFactory;
         _pdfService = pdfService;
+        _excelService = excelService;
         LoadDataCommand.ExecuteAsync(null);
     }
 
@@ -273,21 +281,26 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
     [RelayCommand]
     private async Task Print()
     {
-        if (SelectedPhieu == null) return;
-
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để in."; return; }
         try
         {
             ErrorMessage = "";
-            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"DeNghi_{SelectedPhieu.SoPhieu}_{DateTime.Now:HHmmss}.pdf");
+            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"DeNghi_{DateTime.Now:HHmmss}.pdf");
 
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.DeNghiCapVatTus
+            var phieus = await context.DeNghiCapVatTus
                 .Include(p => p.BoPhan)
                 .Include(p => p.ChiTietDeNghis).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu == null) return;
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayDeNghi).ToListAsync();
+            if (phieus.Count == 0) return;
 
-            await _pdfService.ExportDeNghiCapVatTu(phieu, tempPath);
+            if (phieus.Count == 1)
+                await _pdfService.ExportDeNghiCapVatTu(phieus[0], tempPath);
+            else
+                await _pdfService.ExportMultiDeNghiCapVatTu(phieus, tempPath);
+
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = tempPath,
@@ -343,6 +356,54 @@ public partial class DeNghiCapVatTuViewModel : ObservableObject
         if (item == null) return;
         SelectedPhieu = item;
         await DeletePhieu();
+    }
+
+    [RelayCommand]
+    private async Task ExportPdf()
+    {
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để xuất."; return; }
+        try
+        {
+            ErrorMessage = "";
+            var name = selectedIds.Count == 1 ? $"DeNghi_{selectedIds[0]}" : $"DeNghi_Gop_{DateTime.Now:yyyyMMdd}";
+            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = $"{name}.pdf" };
+            if (dialog.ShowDialog() != true) return;
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieus = await context.DeNghiCapVatTus.Include(p => p.BoPhan)
+                .Include(p => p.ChiTietDeNghis).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayDeNghi).ToListAsync();
+            if (phieus.Count == 1)
+                await _pdfService.ExportDeNghiCapVatTu(phieus[0], dialog.FileName);
+            else
+                await _pdfService.ExportMultiDeNghiCapVatTu(phieus, dialog.FileName);
+        }
+        catch (Exception ex) { ErrorMessage = $"Lỗi xuất PDF: {ex.Message}"; }
+    }
+
+    [RelayCommand]
+    private async Task ExportExcel()
+    {
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để xuất."; return; }
+        try
+        {
+            ErrorMessage = "";
+            var name = selectedIds.Count == 1 ? $"DeNghi_{selectedIds[0]}" : $"DeNghi_Gop_{DateTime.Now:yyyyMMdd}";
+            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "Excel (*.xlsx)|*.xlsx", FileName = $"{name}.xlsx" };
+            if (dialog.ShowDialog() != true) return;
+            using var context = await _contextFactory.CreateDbContextAsync();
+            var phieus = await context.DeNghiCapVatTus.Include(p => p.BoPhan)
+                .Include(p => p.ChiTietDeNghis).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayDeNghi).ToListAsync();
+            if (phieus.Count == 1)
+                await _excelService.ExportDeNghiCapVatTu(phieus[0], dialog.FileName);
+            else
+                await _excelService.ExportMultiDeNghiCapVatTu(phieus, dialog.FileName);
+        }
+        catch (Exception ex) { ErrorMessage = $"Lỗi xuất Excel: {ex.Message}"; }
     }
 }
 

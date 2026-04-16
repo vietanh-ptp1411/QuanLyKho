@@ -12,4 +12,9 @@ public interface IExcelExportService
     Task ExportTonKho(AppDbContext context, string filePath);
     Task ExportDanhSachNhapKho(AppDbContext context, string filePath, DateTime from, DateTime to);
     Task ExportDanhSachXuatKho(AppDbContext context, string filePath, DateTime from, DateTime to);
+
+    // Batch export - gộp nhiều phiếu vào 1 file
+    Task ExportMultiPhieuNhapKho(List<PhieuNhapKho> phieus, string filePath);
+    Task ExportMultiPhieuXuatKho(List<PhieuXuatKho> phieus, string filePath);
+    Task ExportMultiDeNghiCapVatTu(List<DeNghiCapVatTu> phieus, string filePath);
 }

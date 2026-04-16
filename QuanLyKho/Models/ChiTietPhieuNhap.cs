@@ -13,4 +13,7 @@ public class ChiTietPhieuNhap
     public decimal SoLuong { get; set; }
     public decimal DonGia { get; set; }
     public decimal ThanhTien { get; set; }
+
+    [System.ComponentModel.DataAnnotations.MaxLength(200)]
+    public string NhaCungCap { get; set; } = "";
 }

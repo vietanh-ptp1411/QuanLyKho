@@ -11,22 +11,17 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Text="ĐỀ NGHỊ CẤP VẬT TƯ" Style="{StaticResource PageTitleRed}"/>
 
-            <!-- Nút hành động -->
-            <WrapPanel Grid.Row="1" Margin="0,0,0,12">
+            <!-- Tạo đề nghị -->
+            <WrapPanel Grid.Row="1" Margin="0,0,0,8">
                 <Button Command="{Binding AddNewCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,8,0">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,6,0"/>
                         <TextBlock Text="Tạo đề nghị"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="In"/>
                     </StackPanel>
                 </Button>
             </WrapPanel>
@@ -36,6 +31,23 @@
                       FontSize="13" RowHeight="36" ColumnHeaderHeight="38"
                       Style="{StaticResource MaterialDesignDataGrid}">
                 <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="100">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="All" VerticalAlignment="Center" Margin="0,0,6,0" FontWeight="Bold"/>
+                                    <CheckBox IsChecked="{Binding DataContext.IsAllSelected, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="STT" Width="55"
                                         Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},
                                         Converter={StaticResource IndexConverter}}">
@@ -110,6 +122,28 @@
                     </StackPanel>
                 </DockPanel>
             </Border>
+
+            <!-- Nút hành động -->
+            <WrapPanel Grid.Row="4" Margin="0,10,0,0">
+                <Button Command="{Binding PrintCommand}" Style="{StaticResource BtnSecondary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Printer" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="In"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource BtnPrimary}" Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FilePdfBox" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xuất PDF"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource BtnExcel}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="MicrosoftExcel" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Xuất Excel"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
         </Grid>
 
         <!-- Edit Form - Paper Style -->
@@ -266,6 +300,7 @@
                                         <ColumnDefinition Width="70"/>
                                         <ColumnDefinition Width="70"/>
                                         <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="45"/>
                                     </Grid.ColumnDefinitions>
 
                                     <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
@@ -293,9 +328,13 @@
                                         <TextBlock Text="SL&#x0a;được&#x0a;duyệt" FontWeight="Bold" FontSize="10"
                                                    HorizontalAlignment="Center" TextAlignment="Center"/>
                                     </Border>
-                                    <Border Grid.Column="6" BorderBrush="Black" BorderThickness="0,0,0,1" Padding="5">
+                                    <Border Grid.Column="6" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="5">
                                         <TextBlock Text="Ghi&#x0a;chú" FontWeight="Bold" FontSize="11"
                                                    HorizontalAlignment="Center" TextAlignment="Center"/>
+                                    </Border>
+                                    <Border Grid.Column="7" BorderBrush="Black" BorderThickness="0,0,0,1" Padding="3">
+                                        <TextBlock Text="Xóa" FontWeight="Bold" FontSize="10"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                 </Grid>
 
@@ -312,6 +351,7 @@
                                                     <ColumnDefinition Width="70"/>
                                                     <ColumnDefinition Width="70"/>
                                                     <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="45"/>
                                                 </Grid.ColumnDefinitions>
 
                                                 <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="3">
@@ -346,20 +386,20 @@
                                                              BorderThickness="0" FontSize="12" TextAlignment="Center"
                                                              Background="Transparent" VerticalAlignment="Center"/>
                                                 </Border>
-                                                <Border Grid.Column="6" BorderBrush="Black" BorderThickness="0,0,0,1" Padding="2">
-                                                    <Grid>
-                                                        <TextBox Text="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}"
-                                                                 BorderThickness="0" FontSize="11" Background="Transparent"
-                                                                 VerticalAlignment="Center"/>
-                                                        <Button Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                CommandParameter="{Binding}"
-                                                                HorizontalAlignment="Right" VerticalAlignment="Center"
-                                                                Width="18" Height="18" Padding="0" Margin="0,0,2,0"
-                                                                Style="{StaticResource MaterialDesignFlatButton}"
-                                                                Foreground="#DC2626" ToolTip="Xóa dòng">
-                                                            <materialDesign:PackIcon Kind="Close" Width="14" Height="14"/>
-                                                        </Button>
-                                                    </Grid>
+                                                <Border Grid.Column="6" BorderBrush="Black" BorderThickness="0,0,1,1" Padding="2">
+                                                    <TextBox Text="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}"
+                                                             BorderThickness="0" FontSize="11" Background="Transparent"
+                                                             VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border Grid.Column="7" BorderBrush="Black" BorderThickness="0,0,0,1">
+                                                    <Button Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                            Width="28" Height="28" Padding="0"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Foreground="#DC2626" ToolTip="Xóa dòng">
+                                                        <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"/>
+                                                    </Button>
                                                 </Border>
                                             </Grid>
                                         </DataTemplate>

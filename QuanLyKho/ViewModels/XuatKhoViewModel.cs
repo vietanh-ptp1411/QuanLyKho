@@ -26,6 +26,12 @@ public partial class XuatKhoViewModel : ObservableObject
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private int _pageSize = 15;
+    [ObservableProperty] private bool _isAllSelected;
+
+    partial void OnIsAllSelectedChanged(bool value)
+    {
+        foreach (var item in DanhSach) item.IsSelected = value;
+    }
 
     // Form
     [ObservableProperty] private bool _isEditing;
@@ -450,21 +456,26 @@ public partial class XuatKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task Print()
     {
-        if (SelectedPhieu == null) return;
-
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để in."; return; }
         try
         {
             ErrorMessage = "";
-            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"PhieuXuat_{SelectedPhieu.SoPhieu}_{DateTime.Now:HHmmss}.pdf");
+            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"PhieuXuat_{DateTime.Now:HHmmss}.pdf");
 
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.PhieuXuatKhos
+            var phieus = await context.PhieuXuatKhos
                 .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuXuats).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu == null) return;
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayXuat).ToListAsync();
+            if (phieus.Count == 0) return;
 
-            await _pdfService.ExportPhieuXuatKho(phieu, tempPath);
+            if (phieus.Count == 1)
+                await _pdfService.ExportPhieuXuatKho(phieus[0], tempPath);
+            else
+                await _pdfService.ExportMultiPhieuXuatKho(phieus, tempPath);
+
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = tempPath,
@@ -481,57 +492,49 @@ public partial class XuatKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task ExportPdf()
     {
-        if (SelectedPhieu == null) return;
-
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để xuất."; return; }
         try
         {
             ErrorMessage = "";
-            var dialog = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "PDF (*.pdf)|*.pdf",
-                FileName = $"PhieuXuatKho_{SelectedPhieu.SoPhieu}.pdf"
-            };
+            var name = selectedIds.Count == 1 ? $"PhieuXuatKho_{selectedIds[0]}" : $"PhieuXuatKho_Gop_{DateTime.Now:yyyyMMdd}";
+            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = $"{name}.pdf" };
             if (dialog.ShowDialog() != true) return;
-
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.PhieuXuatKhos
-                .Include(p => p.Kho).Include(p => p.BoPhan)
+            var phieus = await context.PhieuXuatKhos.Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuXuats).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu != null) await _pdfService.ExportPhieuXuatKho(phieu, dialog.FileName);
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayXuat).ToListAsync();
+            if (phieus.Count == 1)
+                await _pdfService.ExportPhieuXuatKho(phieus[0], dialog.FileName);
+            else
+                await _pdfService.ExportMultiPhieuXuatKho(phieus, dialog.FileName);
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Lỗi xuất PDF: {ex.Message}";
-        }
+        catch (Exception ex) { ErrorMessage = $"Lỗi xuất PDF: {ex.Message}"; }
     }
 
     [RelayCommand]
     private async Task ExportExcel()
     {
-        if (SelectedPhieu == null) return;
-
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để xuất."; return; }
         try
         {
             ErrorMessage = "";
-            var dialog = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "Excel (*.xlsx)|*.xlsx",
-                FileName = $"PhieuXuatKho_{SelectedPhieu.SoPhieu}.xlsx"
-            };
+            var name = selectedIds.Count == 1 ? $"PhieuXuatKho_{selectedIds[0]}" : $"PhieuXuatKho_Gop_{DateTime.Now:yyyyMMdd}";
+            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "Excel (*.xlsx)|*.xlsx", FileName = $"{name}.xlsx" };
             if (dialog.ShowDialog() != true) return;
-
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.PhieuXuatKhos
-                .Include(p => p.Kho).Include(p => p.BoPhan)
+            var phieus = await context.PhieuXuatKhos.Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuXuats).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu != null) await _excelService.ExportPhieuXuatKho(phieu, dialog.FileName);
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayXuat).ToListAsync();
+            if (phieus.Count == 1)
+                await _excelService.ExportPhieuXuatKho(phieus[0], dialog.FileName);
+            else
+                await _excelService.ExportMultiPhieuXuatKho(phieus, dialog.FileName);
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Lỗi xuất Excel: {ex.Message}";
-        }
+        catch (Exception ex) { ErrorMessage = $"Lỗi xuất Excel: {ex.Message}"; }
     }
 }
 

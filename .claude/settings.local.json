@@ -12,7 +12,9 @@
       "Bash(dotnet new:*)",
       "Bash(dotnet add:*)",
       "Bash(dotnet run:*)",
-      "Bash(dotnet publish:*)"
+      "Bash(dotnet publish:*)",
+      "Bash(dotnet ef *)",
+      "Bash(dotnet tool *)"
     ]
   }
 }

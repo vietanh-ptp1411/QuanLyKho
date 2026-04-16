@@ -28,6 +28,12 @@ public partial class NhapKhoViewModel : ObservableObject
     [ObservableProperty] private int _totalPages = 1;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private int _pageSize = 15;
+    [ObservableProperty] private bool _isAllSelected;
+
+    partial void OnIsAllSelectedChanged(bool value)
+    {
+        foreach (var item in DanhSach) item.IsSelected = value;
+    }
 
     // Form view
     [ObservableProperty] private bool _isEditing;
@@ -41,6 +47,7 @@ public partial class NhapKhoViewModel : ObservableObject
     [ObservableProperty] private string _editThuKho = "";
     [ObservableProperty] private string _editKeToanTruong = "";
     [ObservableProperty] private string _editGiamDoc = "";
+    [ObservableProperty] private string _editSoHopDong = "";
     [ObservableProperty] private string _editGhiChu = "";
     [ObservableProperty] private ObservableCollection<ChiTietNhapRow> _chiTietRows = new();
     [ObservableProperty] private decimal _tongTien;
@@ -128,6 +135,7 @@ public partial class NhapKhoViewModel : ObservableObject
             EditThuKho = "";
             EditKeToanTruong = "";
             EditGiamDoc = "";
+            EditSoHopDong = "";
             EditGhiChu = "";
             ChiTietRows = new ObservableCollection<ChiTietNhapRow>();
             TongTien = 0;
@@ -182,6 +190,7 @@ public partial class NhapKhoViewModel : ObservableObject
             EditThuKho = phieu.ThuKho;
             EditKeToanTruong = phieu.KeToanTruong;
             EditGiamDoc = phieu.GiamDoc;
+            EditSoHopDong = phieu.SoHopDong;
             EditGhiChu = phieu.GhiChu;
 
             ChiTietRows = new ObservableCollection<ChiTietNhapRow>(
@@ -190,7 +199,8 @@ public partial class NhapKhoViewModel : ObservableObject
                     VatTu = VatTus.FirstOrDefault(v => v.Id == ct.VatTuId),
                     SoLuong = ct.SoLuong,
                     DonGia = ct.DonGia,
-                    ThanhTien = ct.ThanhTien
+                    ThanhTien = ct.ThanhTien,
+                    NhaCungCap = ct.NhaCungCap
                 }));
             RecalcTongTien();
         }
@@ -289,6 +299,7 @@ public partial class NhapKhoViewModel : ObservableObject
             phieu.ThuKho         = EditThuKho.Trim();
             phieu.KeToanTruong   = EditKeToanTruong.Trim();
             phieu.GiamDoc        = EditGiamDoc.Trim();
+            phieu.SoHopDong      = EditSoHopDong.Trim();
             phieu.GhiChu         = EditGhiChu.Trim();
             phieu.TongTien       = TongTien;
 
@@ -296,10 +307,11 @@ public partial class NhapKhoViewModel : ObservableObject
             {
                 phieu.ChiTietPhieuNhaps.Add(new ChiTietPhieuNhap
                 {
-                    VatTuId    = row.VatTu!.Id,
-                    SoLuong    = row.SoLuong,
-                    DonGia     = row.DonGia,
-                    ThanhTien  = row.ThanhTien
+                    VatTuId     = row.VatTu!.Id,
+                    SoLuong     = row.SoLuong,
+                    DonGia      = row.DonGia,
+                    ThanhTien   = row.ThanhTien,
+                    NhaCungCap  = row.NhaCungCap?.Trim() ?? ""
                 });
             }
 
@@ -382,20 +394,26 @@ public partial class NhapKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task Print()
     {
-        if (SelectedPhieu == null) return;
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để in."; return; }
         try
         {
             ErrorMessage = "";
-            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"PhieuNhap_{SelectedPhieu.SoPhieu}_{DateTime.Now:HHmmss}.pdf");
+            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"PhieuNhap_{DateTime.Now:HHmmss}.pdf");
 
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.PhieuNhapKhos
+            var phieus = await context.PhieuNhapKhos
                 .Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu == null) return;
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayNhap).ToListAsync();
+            if (phieus.Count == 0) return;
 
-            await _pdfService.ExportPhieuNhapKho(phieu, tempPath);
+            if (phieus.Count == 1)
+                await _pdfService.ExportPhieuNhapKho(phieus[0], tempPath);
+            else
+                await _pdfService.ExportMultiPhieuNhapKho(phieus, tempPath);
+
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = tempPath,
@@ -412,57 +430,49 @@ public partial class NhapKhoViewModel : ObservableObject
     [RelayCommand]
     private async Task ExportPdf()
     {
-        if (SelectedPhieu == null) return;
-
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để xuất."; return; }
         try
         {
             ErrorMessage = "";
-            var dialog = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "PDF (*.pdf)|*.pdf",
-                FileName = $"PhieuNhapKho_{SelectedPhieu.SoPhieu}.pdf"
-            };
+            var name = selectedIds.Count == 1 ? $"PhieuNhapKho_{selectedIds[0]}" : $"PhieuNhapKho_Gop_{DateTime.Now:yyyyMMdd}";
+            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = $"{name}.pdf" };
             if (dialog.ShowDialog() != true) return;
-
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.PhieuNhapKhos
-                .Include(p => p.Kho).Include(p => p.BoPhan)
+            var phieus = await context.PhieuNhapKhos.Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu != null) await _pdfService.ExportPhieuNhapKho(phieu, dialog.FileName);
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayNhap).ToListAsync();
+            if (phieus.Count == 1)
+                await _pdfService.ExportPhieuNhapKho(phieus[0], dialog.FileName);
+            else
+                await _pdfService.ExportMultiPhieuNhapKho(phieus, dialog.FileName);
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Lỗi xuất PDF: {ex.Message}";
-        }
+        catch (Exception ex) { ErrorMessage = $"Lỗi xuất PDF: {ex.Message}"; }
     }
 
     [RelayCommand]
     private async Task ExportExcel()
     {
-        if (SelectedPhieu == null) return;
-
+        var selectedIds = DanhSach.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+        if (selectedIds.Count == 0 && SelectedPhieu != null) selectedIds.Add(SelectedPhieu.Id);
+        if (selectedIds.Count == 0) { ErrorMessage = "Vui lòng chọn ít nhất một phiếu để xuất."; return; }
         try
         {
             ErrorMessage = "";
-            var dialog = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "Excel (*.xlsx)|*.xlsx",
-                FileName = $"PhieuNhapKho_{SelectedPhieu.SoPhieu}.xlsx"
-            };
+            var name = selectedIds.Count == 1 ? $"PhieuNhapKho_{selectedIds[0]}" : $"PhieuNhapKho_Gop_{DateTime.Now:yyyyMMdd}";
+            var dialog = new Microsoft.Win32.SaveFileDialog { Filter = "Excel (*.xlsx)|*.xlsx", FileName = $"{name}.xlsx" };
             if (dialog.ShowDialog() != true) return;
-
             using var context = await _contextFactory.CreateDbContextAsync();
-            var phieu = await context.PhieuNhapKhos
-                .Include(p => p.Kho).Include(p => p.BoPhan)
+            var phieus = await context.PhieuNhapKhos.Include(p => p.Kho).Include(p => p.BoPhan)
                 .Include(p => p.ChiTietPhieuNhaps).ThenInclude(ct => ct.VatTu).ThenInclude(v => v.DonViTinh)
-                .FirstOrDefaultAsync(p => p.Id == SelectedPhieu.Id);
-            if (phieu != null) await _excelService.ExportPhieuNhapKho(phieu, dialog.FileName);
+                .Where(p => selectedIds.Contains(p.Id)).OrderBy(p => p.NgayNhap).ToListAsync();
+            if (phieus.Count == 1)
+                await _excelService.ExportPhieuNhapKho(phieus[0], dialog.FileName);
+            else
+                await _excelService.ExportMultiPhieuNhapKho(phieus, dialog.FileName);
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Lỗi xuất Excel: {ex.Message}";
-        }
+        catch (Exception ex) { ErrorMessage = $"Lỗi xuất Excel: {ex.Message}"; }
     }
 }
 
@@ -474,6 +484,7 @@ public partial class ChiTietNhapRow : ObservableObject
     [ObservableProperty] private decimal _soLuong;
     [ObservableProperty] private decimal _donGia;
     [ObservableProperty] private decimal _thanhTien;
+    [ObservableProperty] private string? _nhaCungCap = "";
 
     public ChiTietNhapRow(NhapKhoViewModel parent)
     {

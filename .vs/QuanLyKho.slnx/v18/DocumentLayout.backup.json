@@ -1,69 +1,69 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\",
+  "WorkspaceRootPath": "D:\\VisualStudio\\QuanLyKho\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\xuatkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\xuatkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\xuatkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\bophanview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\bophanview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\baocaoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\baocaoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\vattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\vattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\app.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}",
-      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\app.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\tonkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\tonkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\nhapkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\nhapkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\nhapkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\nhomvattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\bophanview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\bophanview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\baocaoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\baocaoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\vattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\vattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\app.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\app.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\tonkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\tonkhoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\nhomvattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\nhomvattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\denghicapvattuview.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\denghicapvattuview.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\denghicapvattuview.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\denghicapvattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\denghicapvattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\denghicapvattuview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\dashboardview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\dashboardview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\dashboardview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\donvitinhview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\donvitinhview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\donvitinhview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\views\\khoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\views\\khoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\views\\khoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|c:\\users\\hina\\source\\repos\\quanlykho\\quanlykho\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|d:\\visualstudio\\quanlykho\\quanlykho\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7A5FBFB0-4435-B54A-C63C-1E842586C6EF}|QuanLyKho\\QuanLyKho.csproj|solutionrelative:quanlykho\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -74,7 +74,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -90,34 +90,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "BoPhanView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\BoPhanView.xaml",
-              "RelativeDocumentMoniker": "QuanLyKho\\Views\\BoPhanView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\BoPhanView.xaml",
-              "RelativeToolTip": "QuanLyKho\\Views\\BoPhanView.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-09T14:34:33.965Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "TonKhoView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\TonKhoView.xaml",
-              "RelativeDocumentMoniker": "QuanLyKho\\Views\\TonKhoView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\TonKhoView.xaml",
-              "RelativeToolTip": "QuanLyKho\\Views\\TonKhoView.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-09T14:34:20.135Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "XuatKhoView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\XuatKhoView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\XuatKhoView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\XuatKhoView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\XuatKhoView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\XuatKhoView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\XuatKhoView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:25.3Z",
@@ -125,33 +102,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "BaoCaoView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\BaoCaoView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\BaoCaoView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\BaoCaoView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\BaoCaoView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\BaoCaoView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\BaoCaoView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:30.023Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
+              "Title": "NhapKhoView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\NhapKhoView.xaml",
+              "RelativeDocumentMoniker": "QuanLyKho\\Views\\NhapKhoView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\NhapKhoView.xaml",
+              "RelativeToolTip": "QuanLyKho\\Views\\NhapKhoView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-09T14:34:05.85Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TonKhoView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\TonKhoView.xaml",
+              "RelativeDocumentMoniker": "QuanLyKho\\Views\\TonKhoView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\TonKhoView.xaml",
+              "RelativeToolTip": "QuanLyKho\\Views\\TonKhoView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-09T14:34:20.135Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BoPhanView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\BoPhanView.xaml",
+              "RelativeDocumentMoniker": "QuanLyKho\\Views\\BoPhanView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\BoPhanView.xaml",
+              "RelativeToolTip": "QuanLyKho\\Views\\BoPhanView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-09T14:34:33.965Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "VatTuView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\VatTuView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\VatTuView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\VatTuView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\VatTuView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\VatTuView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\VatTuView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:22.699Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "app.ico - Icon [16x16, 32 bit, PNG]",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\app.ico",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\app.ico",
               "RelativeDocumentMoniker": "QuanLyKho\\app.ico",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\app.ico - Icon [16x16, 32 bit, PNG]",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\app.ico - Icon [16x16, 32 bit, PNG]",
               "RelativeToolTip": "QuanLyKho\\app.ico - Icon [16x16, 32 bit, PNG]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001525|",
               "WhenOpened": "2026-04-13T07:18:46.59Z",
@@ -161,31 +172,20 @@
               "$type": "Document",
               "DocumentIndex": 7,
               "Title": "NhomVatTuView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\NhomVatTuView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\NhomVatTuView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\NhomVatTuView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\NhomVatTuView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\NhomVatTuView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\NhomVatTuView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:12.132Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "NhapKhoView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\NhapKhoView.xaml",
-              "RelativeDocumentMoniker": "QuanLyKho\\Views\\NhapKhoView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\NhapKhoView.xaml",
-              "RelativeToolTip": "QuanLyKho\\Views\\NhapKhoView.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-09T14:34:05.85Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 9,
               "Title": "DeNghiCapVatTuView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\DeNghiCapVatTuView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\DeNghiCapVatTuView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:53.881Z"
@@ -194,9 +194,9 @@
               "$type": "Document",
               "DocumentIndex": 8,
               "Title": "DeNghiCapVatTuView.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml.cs",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml.cs",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\DeNghiCapVatTuView.xaml.cs",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml.cs",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DeNghiCapVatTuView.xaml.cs",
               "RelativeToolTip": "QuanLyKho\\Views\\DeNghiCapVatTuView.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -206,9 +206,9 @@
               "$type": "Document",
               "DocumentIndex": 10,
               "Title": "AppDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Data\\AppDbContext.cs",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "QuanLyKho\\Data\\AppDbContext.cs",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Data\\AppDbContext.cs",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Data\\AppDbContext.cs",
               "RelativeToolTip": "QuanLyKho\\Data\\AppDbContext.cs",
               "ViewState": "AgIAAFYAAAAAAAAAAAAmwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -218,9 +218,9 @@
               "$type": "Document",
               "DocumentIndex": 11,
               "Title": "DashboardView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DashboardView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DashboardView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\DashboardView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DashboardView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DashboardView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\DashboardView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:38.198Z"
@@ -229,9 +229,9 @@
               "$type": "Document",
               "DocumentIndex": 12,
               "Title": "DonViTinhView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DonViTinhView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DonViTinhView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\DonViTinhView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\DonViTinhView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\DonViTinhView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\DonViTinhView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:34:01.937Z"
@@ -240,9 +240,9 @@
               "$type": "Document",
               "DocumentIndex": 13,
               "Title": "KhoView.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\KhoView.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\KhoView.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\Views\\KhoView.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\Views\\KhoView.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\Views\\KhoView.xaml",
               "RelativeToolTip": "QuanLyKho\\Views\\KhoView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:33:44.699Z"
@@ -251,9 +251,9 @@
               "$type": "Document",
               "DocumentIndex": 14,
               "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\MainWindow.xaml",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\MainWindow.xaml",
               "RelativeDocumentMoniker": "QuanLyKho\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\MainWindow.xaml",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\MainWindow.xaml",
               "RelativeToolTip": "QuanLyKho\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-09T14:08:11.998Z"
@@ -262,9 +262,9 @@
               "$type": "Document",
               "DocumentIndex": 15,
               "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "QuanLyKho\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\Hina\\source\\repos\\QuanLyKho\\QuanLyKho\\MainWindow.xaml.cs",
+              "ToolTip": "D:\\VisualStudio\\QuanLyKho\\QuanLyKho\\MainWindow.xaml.cs",
               "RelativeToolTip": "QuanLyKho\\MainWindow.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",

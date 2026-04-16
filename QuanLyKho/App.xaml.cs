@@ -115,6 +115,12 @@ public partial class App : Application
 
             if (!HasColumn("PhieuNhapKhos", "BoPhanId"))
                 Exec("ALTER TABLE PhieuNhapKhos ADD COLUMN BoPhanId INTEGER NULL;");
+
+            if (!HasColumn("PhieuNhapKhos", "SoHopDong"))
+                Exec("ALTER TABLE PhieuNhapKhos ADD COLUMN SoHopDong TEXT NOT NULL DEFAULT '';");
+
+            if (!HasColumn("ChiTietPhieuNhaps", "NhaCungCap"))
+                Exec("ALTER TABLE ChiTietPhieuNhaps ADD COLUMN NhaCungCap TEXT NOT NULL DEFAULT '';");
         }
         catch
         {
